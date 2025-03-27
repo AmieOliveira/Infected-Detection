@@ -3,7 +3,7 @@ rd_seed: 0
 
 # Network creation configurations
 network:
-  model: BA       # BA, WS, Gnp]
+  model: BA       # BA, WS, Gnp
   parameters: 0   # TODO: Adicionar como outro dicionário? Ou como uma lista? (Acho melhor dicionário.) Deixar dentro do dicionario network ou criar esse separado mesmo?
   list_of_etc:
     - item1

@@ -5,10 +5,25 @@
 import yaml
 import argparse
 
-# TODO: Use argparse to receive alternative configuration files via command line
-config_file = "gera_instancia_config.yaml"
+
+parser = argparse.ArgumentParser(
+    prog="Hidden network epidemics generator",
+    description="Script designed to generate an instance of a network "
+                "epidemie with hidden infected nodes. Customizations "
+                "should be given via a configuration file."
+)
+parser.add_argument(
+    "configfile",
+    default="gera_instancia_config.yaml", nargs="?",
+    help="Name of the configuration file to be used. "
+         "If none is given, then the default "
+         "'gera_instancia_config.yaml' will be used."
+)
+
 
 # 1. Read from configuration file
+args = parser.parse_args()
+config_file = args.configfile
 with open(config_file, "r") as f:
     cfg = yaml.load(f, Loader=yaml.SafeLoader)
 
