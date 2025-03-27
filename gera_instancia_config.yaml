@@ -3,14 +3,22 @@ rd_seed: 0
 
 # Network creation configurations
 network:
-  model: BA       # BA, WS, Gnp
-  parameters: 0   # TODO: Adicionar como outro dicionário? Ou como uma lista? (Acho melhor dicionário.) Deixar dentro do dicionario network ou criar esse separado mesmo?
-  list_of_etc:
-    - item1
-    - item2       # Deixei aqui só pra mostrar que isso é possível, apagar!
-# TODO
+  model: BA       # adjacency, BA, WS, ER
+  n_nodes: 100    # Number of nodes in the generated graph -- will be ignored if model is 'adjacency'
+  adjacency:      # Arguments used if model is 'adjacency'
+    path: /path/to/graph/file     # TODO: Define file format
+  BA:   # Barabási-Albert model parameters
+    m: 2          # Number of edged a new node will have when it enters the network
+  WS:   # Watts-Strogatz model parameters
+    k: 4
+    p: 0.3        # Probability of rewiring each edge
+  ER:   # Erdös-Rényi model -- G(n,p) -- parameters
+    p: 0.3        # Probability for edge creation
 
 # Epidemie parametrization
 epidemic:
-  spread_factor: 0.1
-# TODO
+  beta: 0.1             # Probability of an infected node infecting an adjacent susceptible one
+  observ_prob: 0.7      # Probability of an infected node being identified as infected
+  total_time: 0         # Total time of simulation (set to 0 to disable)
+  stop_frac: 0.2        # Maximum fraction of infected nodes before simulation stops (set to 0 to disable)
+
