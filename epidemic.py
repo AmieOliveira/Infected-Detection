@@ -19,7 +19,7 @@ def si_epidemic(graph, beta, initial_infected_count=1, max_iterations=None, max_
     if max_iterations is None and max_infected_frac is None:
         raise ValueError("At least onde of max_iterations or max_infected_frac must be provided.")
     
-    initial_infected = random.sample(graph.nodes(), initial_infected_count) # Randomly select the initial infected nodes from the graph
+    initial_infected = random.choices(list(graph.nodes()), k=initial_infected_count) # Randomly select the initial infected nodes from the graph
     infected = set(initial_infected)
     iteration = 0
 
@@ -38,7 +38,10 @@ def si_epidemic(graph, beta, initial_infected_count=1, max_iterations=None, max_
 
         for node in infected:
             # Iterate over neighbors of the infected node that are not already infected
-            for neighbor in graph.neighbors(node) - infected:
+            for neighbor in set(graph.neighbors(node)) - infected:
+                # Guarantee that maximum number of infected nodes is not exceeded
+                if max_infected is not None and len(infected) + len(new_infected) >= max_infected:
+                    break
                 # With probability 'beta', attempt to infect the neighbor
                 if random.random() < beta:
                     new_infected.add(neighbor) # Add the neighbor to the new infected set
@@ -60,12 +63,10 @@ def observable_infected(infected_nodes, observation_probability):
     Returns:
     - A list of observable infected nodes.
     """
-    infected_nodes_array = np.array(infected_nodes)
+    a = np.full(len(infected_nodes), observation_probability)
+    b = np.random.uniform(size=len(infected_nodes))
+    c = np.multiply(b < a, 1)
+
+    observable_nodes = [x for x, mask in zip(infected_nodes, c) if mask==1]
     
-    # Generate random values between 0 and 1 for each infected node
-    random_values = np.random.random(len(infected_nodes_array))
-    
-    # Select nodes where the random value is less than the observation probability
-    observable_nodes = infected_nodes_array[random_values < observation_probability]
-    
-    return list(observable_nodes)
+    return observable_nodes
