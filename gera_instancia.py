@@ -6,6 +6,7 @@ import argparse
 import yaml
 import numpy as np
 import networkx as nx
+import torch
 import epidemic
 import centrality
 
@@ -167,7 +168,26 @@ contact = centrality.contact(G, observ_infec)
 betweenness = centrality.betweenness(G)
 observ_betweenness = centrality.observed_betweenness(G, observ_infec)
 
+# 5. Create tensor
+observed_tensor = torch.full((len(G),), 0.0)
+for node in observ_infec:
+    observed_tensor[node] = 1
 
-# 5. Format and save data
+degree_tensor = torch.tensor(list(degree.values()))
+contact_tensor = torch.tensor(list(contact.values()))
+betweenness_tensor = torch.tensor(list(betweenness.values()))
+observ_betweenness_tensor = torch.tensor(list(observ_betweenness.values()))
+
+X = torch.cat((observed_tensor.unsqueeze(-1),
+               degree_tensor.unsqueeze(-1),
+               contact_tensor.unsqueeze(-1),
+               betweenness_tensor.unsqueeze(-1),
+               observ_betweenness_tensor.unsqueeze(-1)), dim=-1
+               )
+
+Y = torch.full((len(G),), 0.0)
+Y[infected_nodes] = 1
+
+# 6. Format and save data
 # TODO: Salvar dados (usando a classe, e definir nome de arquivo)
 
