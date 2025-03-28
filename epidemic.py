@@ -52,21 +52,21 @@ def si_epidemic(graph, beta, initial_infected_count=1, max_iterations=None, max_
     return list(infected)
 
 
-def observable_infected(infected_nodes, observation_probability):
+def observed_infected(infected_nodes, observation_probability):
     """
-    Returns a list of observable infected nodes based on a given observation probability.
+    Returns a list of observed infected nodes based on a given observation probability.
     
     Parameters:
     - infected_nodes: List of infected nodes.
     - observation_probability: Probability (between 0 and 1) of observing each infected node.
     
     Returns:
-    - A list of observable infected nodes.
+    - A list of observed infected nodes.
     """
     a = np.full(len(infected_nodes), observation_probability)
     b = np.random.uniform(size=len(infected_nodes))
     c = np.multiply(b < a, 1)
 
-    observable_nodes = [x for x, mask in zip(infected_nodes, c) if mask==1]
+    observed_nodes = [x for x, mask in zip(infected_nodes, c) if mask==1]
     
-    return observable_nodes
+    return observed_nodes

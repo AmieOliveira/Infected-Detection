@@ -7,6 +7,7 @@ import yaml
 import numpy as np
 import networkx as nx
 import epidemic
+import centrality
 
 
 parser = argparse.ArgumentParser(
@@ -63,11 +64,16 @@ observ_prob = cfg["epidemic"]["observ_prob"]
 # TODO: Gerar epidemia
 infected_nodes = epidemic.si_epidemic(G, beta, init_infec, total_time, stop_frac)
 
-observ_infec = epidemic.observable_infected(infected_nodes, observ_prob)
+observ_infec = epidemic.observed_infected(infected_nodes, observ_prob)
 
 
 # 4. Compute network centralities
 # TODO: Calcular métricas
+
+degree = centrality.degree(G)
+contact = centrality.contact(G, observ_infec)
+betweenness = centrality.betweenness(G)
+observ_betweenness = centrality.observed_betweenness(G, observ_infec)
 
 
 # TODO: Salvar dados (usando a classe, e definir nome de arquivo)
