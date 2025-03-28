@@ -6,7 +6,7 @@ network:
   model: BA       # adjacency, BA, WS, ER
   n_nodes: 100    # Number of nodes in the generated graph -- will be ignored if model is 'adjacency'
   adjacency:      # Arguments used if model is 'adjacency'
-    path: /path/to/graph/file     # TODO: Define file format
+    path: /path/to/graph/file     # TODO: Define file format | It should be a list of lists representing the adjacency matrix
   BA:   # Barabási-Albert model parameters
     m: 2          # Number of edged a new node will have when it enters the network
   WS:   # Watts-Strogatz model parameters
@@ -18,7 +18,8 @@ network:
 # Epidemie parametrization
 epidemic:
   beta: 0.1             # Probability of an infected node infecting an adjacent susceptible one
-  observ_prob: 0.7      # Probability of an infected node being identified as infected
+  init_infec: 1         # Number of initial infected nodes
   total_time: 0         # Total time of simulation (set to 0 to disable)
   stop_frac: 0.2        # Maximum fraction of infected nodes before simulation stops (set to 0 to disable)
+  observ_prob: 0.7      # Probability of an infected node being identified as infected
 
