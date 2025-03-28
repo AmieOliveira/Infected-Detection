@@ -8,9 +8,9 @@ network:
   adjacency:      # Arguments used if model is 'adjacency'
     path: /path/to/graph/file     # TODO: Define file format | It should be a list of lists representing the adjacency matrix
   BA:   # Barabási-Albert model parameters
-    m: 2          # Number of edged a new node will have when it enters the network
+    m: 2          # Number of edges a new node will have when it enters the network
   WS:   # Watts-Strogatz model parameters
-    k: 4
+    k: 4          # Each node is joined with its k nearest neighbors in a ring topology.
     p: 0.3        # Probability of rewiring each edge
   ER:   # Erdös-Rényi model -- G(n,p) -- parameters
     p: 0.3        # Probability for edge creation
