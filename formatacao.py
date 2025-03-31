@@ -3,9 +3,10 @@
 """
 
 import torch
+from torch.utils.data import Dataset
 
 
-class EpidemicDataset:
+class EpidemicInstance:
     def __init__(self, graph, input_metrics, target, metadados):
         self.G = graph              # Lista de arestas
         self.X = input_metrics      # Valores dos inputs (infectados observáveis + métricas estruturais)
@@ -14,7 +15,20 @@ class EpidemicDataset:
         self.metadados = metadados
 
 
-# TODO: Criar script de gerar uma instância e salvar os dados no formato EpidemicDataset
+class EpidemicDataset(Dataset):
+    # TODO: classe para ler os .pkl de cada instãncia e concatenar num dat set só para a GNN
 
-# TODO: Criar objeto Dataset (baseado no torch) que concatena os vários arquivos
+    # TODO: Docstring
 
+    def __init__(self):
+        # TODO: Quais os argumentos que queremos dar de entrada? Precisamos inicializar o init da classe Dataset?
+        #   Como fazer a organização dos dados?
+        ...
+
+    def read_instances(self, folder):
+        # TODO: Read all .pkl files in the directory 'folder' and concatenate them accordingly
+        ...
+
+    def __getitem__(self, index):
+        # TODO: Method to return one instance of the data set
+        ...

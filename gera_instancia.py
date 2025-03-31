@@ -13,7 +13,7 @@ import pickle
 import torch
 import epidemic
 import centrality
-from formatacao import EpidemicDataset
+from formatacao import EpidemicInstance
 
 
 parser = argparse.ArgumentParser(
@@ -246,7 +246,7 @@ epinfo = f"b{beta}-ii{init_infec}-t{total_time}-f{stop_frac}-o{observ_prob}"
 outfile = f"{outpath}/instance_model{net_model}-{params}_epidemic-{epinfo}_s{seed}.pkl"
 
 with open(outfile, 'wb') as of:
-    datum = EpidemicDataset(G, X, Y, metadados)
+    datum = EpidemicInstance(G, X, Y, metadados)
     pickle.dump(datum, of, pickle.HIGHEST_PROTOCOL)
 
 print(f"Saved output to {outfile}")
