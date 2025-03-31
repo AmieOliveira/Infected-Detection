@@ -120,9 +120,9 @@ with open(s_filename, "w") as subfile:
 
                 subfile.write(f"\n\n")
                 subfile.write(f'Arguments\t\t\t\t= "{c_name} -b {b} -f {f} -o {o} -s {s} -d ."\n')
-                subfile.write(f"Log\t\t\t\t\t\t= {folder}/log/{base_name}.log\n")
-                subfile.write(f"Error\t\t\t\t\t= {folder}/error/{base_name}_b{b}_f{f}_o{o}_s{s}.err\n")
-                subfile.write(f"Output\t\t\t\t\t= {folder}/out/{base_name}_b{b}_f{f}_o{o}_s{s}.out\n")
+                subfile.write(f"Log\t\t\t\t\t= {w_dir}/log/{base_name}.log\n")
+                subfile.write(f"Error\t\t\t\t\t= {w_dir}/error/{base_name}_b{b}_f{f}_o{o}_s{s}.err\n")
+                subfile.write(f"Output\t\t\t\t\t= {w_dir}/out/{base_name}_b{b}_f{f}_o{o}_s{s}.out\n")
                 subfile.write(f"transfer_output_files\t= {outfilename}\n")
                 subfile.write(f"Queue 1")
     # TODO: Definir o nome do arquivo de saída para terminar o arquivo de configuração
