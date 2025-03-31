@@ -19,7 +19,7 @@ change_seed = False
 experiment_name = "test"
 
 # Network parameters
-model = "BA"  # "WS", "ER", "adjacency"
+model = "WS"  # "WS", "ER", "adjacency"
 n_nodes = 20
 ba_m = 2
 ws_k = 4
@@ -68,11 +68,11 @@ configs = {
         "ER": {"p": er_p},
     },
     "epidemic": {
-        "beta": beta,
+        "beta": beta if type(beta) != list else beta[0],
         "init_infec": i_infected,
         "total_time": tot_time,
-        "stop_frac": stop_fraction,
-        "observ_prob": observation_prob,
+        "stop_frac": stop_fraction if type(stop_fraction) != list else stop_fraction[0],
+        "observ_prob": observation_prob if type(observation_prob) != list else observation_prob[0],
     },
 }
 
@@ -96,6 +96,7 @@ with open(s_filename, "w") as subfile:
     subfile.write(f"should_transfer_files\t= YES\n")
     subfile.write(f"when_to_transfer_output\t= ON_EXIT\n")
     subfile.write(f"transfer_input_files\t= {w_dir}/{c_filename}\n")
+    subfile.write(f'transfer_output_remaps\t= "{w_dir}/{c_filename} = {c_name}"\n')
 
     s = base_seed
 
@@ -105,12 +106,24 @@ with open(s_filename, "w") as subfile:
                 if change_seed:
                     s += rd.randint(-10, 10)
 
+                params = ""
+                if model != "adjacency":
+                    configs["network"][model]["n"] = n_nodes
+                keys = list(configs["network"][model].keys())
+                keys.sort()
+                for key in keys:
+                    params += f"{key}{configs['network'][model][key]}"
+
+                epinfo = f"b{b}-ii{i_infected}-t{tot_time}-f{f}-o{o}"
+
+                outfilename = f"instance_model{model}-{params}_epidemic-{epinfo}_s{s}.pkl"
+
                 subfile.write(f"\n\n")
-                subfile.write(f"Arguments\t\t\t\t= {c_name} -b {b} -f {f} -o {o} -s {s}\n")
+                subfile.write(f'Arguments\t\t\t\t= "{c_name} -b {b} -f {f} -o {o} -s {s} -d ."\n')
                 subfile.write(f"Log\t\t\t\t\t\t= {folder}/log/{base_name}.log\n")
                 subfile.write(f"Error\t\t\t\t\t= {folder}/error/{base_name}_b{b}_f{f}_o{o}_s{s}.err\n")
                 subfile.write(f"Output\t\t\t\t\t= {folder}/out/{base_name}_b{b}_f{f}_o{o}_s{s}.out\n")
-                subfile.write(f"transfer_output_files\t= \n")
+                subfile.write(f"transfer_output_files\t= {outfilename}\n")
                 subfile.write(f"Queue 1")
     # TODO: Definir o nome do arquivo de saída para terminar o arquivo de configuração
 

@@ -6,9 +6,12 @@ import argparse
 import yaml
 import numpy as np
 import networkx as nx
+import pickle
+
 import torch
 import epidemic
 import centrality
+from formatacao import EpidemicDataset
 
 
 parser = argparse.ArgumentParser(
@@ -28,6 +31,10 @@ parser.add_argument(
 parser.add_argument(
     "--seed", "-s", type=int,
     help="Random seed to be used in the data generation."
+)
+parser.add_argument(
+    "--outpath", "--outdir", "-d",
+    help="Directory where the output should be saved."
 )
 
 net_parser = parser.add_argument_group(
@@ -107,6 +114,7 @@ epi_parser.add_argument(
 # 1. Read from configuration file
 args = parser.parse_args()
 config_file = args.configfile
+print(f"Reading configurations from {config_file}")
 with open(config_file, "r") as f:
     cfg = yaml.load(f, Loader=yaml.SafeLoader)
 
@@ -115,27 +123,43 @@ if not seed:
     seed = cfg["rd_seed"]
 np.random.seed(seed)  # TODO: Conferir se isso é o suficiente
 
+metadados = {
+    "Random seed": seed,
+}
+
 # 2. Create graph
 net_model = args.model_type
 if not net_model:
     net_model = cfg["network"]["model"]
 
-net = None
+outpath = args.outpath
+if not outpath:
+    outpath = f"results/{net_model}"
+
+metadados["model"] = {
+        "type": net_model
+}
+
+G = None
 if net_model == "adjacency":
     net_path = args.path
     if not net_path:
         net_path = cfg["network"]["adjacency"]["path"]
     G = nx.from_numpy_matrix(np.array(net_path))
+    metadados["model"]["path"] = net_path
 else:
     n = args.n_nodes
     if not n:
         n = cfg["network"]["n_nodes"]
+    metadados["model"]["n"] = n
 
     if net_model == "BA":
         m = args.BA_m
         if not m:
             m = cfg["network"]["BA"]["m"]
         G = nx.barabasi_albert_graph(n, m)
+        metadados["model"]["m"] = m
+
     elif net_model == "WS":
         k = args.WS_k
         if not k:
@@ -144,11 +168,20 @@ else:
         if not p:
             p = cfg["network"]["WS"]["p"]
         G = nx.watts_strogatz_graph(n, k, p)
+        metadados["model"]["p"] = p
+        metadados["model"]["k"] = k
+
     elif net_model == "ER":
         p = args.WS_p
         if not p:
             p = cfg["network"]["ER"]["p"]
         G = nx.erdos_renyi_graph(n, p)
+        metadados["model"]["p"] = p
+
+    else:
+        raise ValueError(f"Model {net_model} not implemented.")
+
+print(f"Created graph: {G}")
 
 # 3. Create epidemic
 beta = args.beta if args.beta else cfg["epidemic"]["beta"]
@@ -157,9 +190,18 @@ total_time = args.time if args.time else cfg["epidemic"]["total_time"]
 stop_frac = args.stop if args.stop else cfg["epidemic"]["stop_frac"]
 observ_prob = args.observ if args.observ else cfg["epidemic"]["observ_prob"]
 
+metadados["epidemic"] = {
+    "beta": beta,
+    "init_infec": init_infec,
+    "total_time": total_time,
+    "stop_frac": stop_frac,
+    "observ_prob": observ_prob,
+}
+
 infected_nodes = epidemic.si_epidemic(G, beta, init_infec, total_time, stop_frac)
 
 observ_infec = epidemic.observed_infected(infected_nodes, observ_prob)
+print(f"Generated epidemic! {len(infected_nodes)} infected and {len(observ_infec)} observed.")
 
 
 # 4. Compute network centralities
@@ -167,6 +209,7 @@ degree = centrality.degree(G)
 contact = centrality.contact(G, observ_infec)
 betweenness = centrality.betweenness(G)
 observ_betweenness = centrality.observed_betweenness(G, observ_infec)
+print("Finished calculating the centrality metrics")
 
 # 5. Create tensor
 observed_tensor = torch.full((len(G),), 0.0)
@@ -187,7 +230,22 @@ X = torch.cat((observed_tensor.unsqueeze(-1),
 
 Y = torch.full((len(G),), 0.0)
 Y[infected_nodes] = 1
+print("Generated GNN data")
 
 # 6. Format and save data
-# TODO: Salvar dados (usando a classe, e definir nome de arquivo)
+params = ""
+keys = list(metadados["model"].keys())
+keys.sort()
+for key in keys:
+    if key != "type":
+        params += f"{key}{metadados['model'][key]}"
+epinfo = f"b{beta}-ii{init_infec}-t{total_time}-f{stop_frac}-o{observ_prob}"
+
+outfile = f"{outpath}/instance_model{net_model}-{params}_epidemic-{epinfo}_s{seed}.pkl"
+
+with open(outfile, 'wb') as of:
+    datum = EpidemicDataset(G, X, Y, metadados)
+    pickle.dump(datum, of, pickle.HIGHEST_PROTOCOL)
+
+print(f"Saved output to {outfile}")
 
