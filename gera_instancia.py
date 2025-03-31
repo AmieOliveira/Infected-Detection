@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 """
     Script to generate an instance for the infected nodes detection problem
 """
