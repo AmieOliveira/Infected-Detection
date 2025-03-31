@@ -93,10 +93,13 @@ with open(s_filename, "w") as subfile:
     subfile.write(f"Executable\t\t\t\t= {w_dir}/{execution_file}\n")
     subfile.write(f"initialdir\t\t\t\t= {w_dir}/{folder}\n")
     subfile.write(f"Universe\t\t\t\t= vanilla\n")
-    subfile.write(f"should_transfer_files\t= YES\n")
-    subfile.write(f"when_to_transfer_output\t= ON_EXIT\n")
-    subfile.write(f"transfer_input_files\t= {w_dir}/{c_filename}\n")
-    subfile.write(f'transfer_output_remaps\t= "{w_dir}/{c_filename} = {c_name}"\n')
+    subfile.write(f"should_transfer_files\t\t= YES\n")
+    subfile.write(f"when_to_transfer_output\t\t= ON_EXIT\n")
+    subfile.write(f"transfer_input_files\t\t= {w_dir}/epidemic.py,{w_dir}/centrality.py,{w_dir}/formatacao.py,{w_dir}/{c_filename}\n")
+    subfile.write(f'transfer_output_remaps\t\t= "{w_dir}/epidemic.py = epidemic.py"\n')
+    subfile.write(f'transfer_output_remaps\t\t= "{w_dir}/centrality.py = centrality.py"\n')
+    subfile.write(f'transfer_output_remaps\t\t= "{w_dir}/formatacao.py = formatacao.py"\n')
+    subfile.write(f'transfer_output_remaps\t\t= "{w_dir}/{c_filename} = {c_name}"\n')
 
     s = base_seed
 
