@@ -15,7 +15,7 @@ network:
   ER:   # Erdös-Rényi model -- G(n,p) -- parameters
     p: 0.3        # Probability for edge creation
 
-# Epidemie parametrization
+# Epidemic parametrization
 epidemic:
   beta: 0.1             # Probability of an infected node infecting an adjacent susceptible one
   init_infec: 1         # Number of initial infected nodes

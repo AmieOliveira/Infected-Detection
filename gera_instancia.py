@@ -9,8 +9,9 @@ import yaml
 import numpy as np
 import networkx as nx
 import pickle
-
 import torch
+from torch_geometric.utils import from_networkx
+
 import epidemic
 import centrality
 from formatacao import EpidemicInstance
@@ -123,7 +124,7 @@ with open(config_file, "r") as f:
 seed = args.seed
 if not seed:
     seed = cfg["rd_seed"]
-np.random.seed(seed)  # TODO: Conferir se isso é o suficiente
+np.random.seed(seed)
 
 metadados = {
     "Random seed": seed,
@@ -223,12 +224,13 @@ contact_tensor = torch.tensor(list(contact.values()))
 betweenness_tensor = torch.tensor(list(betweenness.values()))
 observ_betweenness_tensor = torch.tensor(list(observ_betweenness.values()))
 
-X = torch.cat((observed_tensor.unsqueeze(-1),
-               degree_tensor.unsqueeze(-1),
-               contact_tensor.unsqueeze(-1),
-               betweenness_tensor.unsqueeze(-1),
-               observ_betweenness_tensor.unsqueeze(-1)), dim=-1
-               )
+input_metrics = {
+    "OBS_I": observed_tensor,
+    "DEG": degree_tensor,
+    "CONT": contact_tensor,
+    "BETW": betweenness_tensor,
+    "OBS_B": observ_betweenness_tensor,
+}
 
 Y = torch.full((len(G),), 0.0)
 Y[infected_nodes] = 1
@@ -245,8 +247,10 @@ epinfo = f"b{beta}-ii{init_infec}-t{total_time}-f{stop_frac}-o{observ_prob}"
 
 outfile = f"{outpath}/instance_model{net_model}-{params}_epidemic-{epinfo}_s{seed}.pkl"
 
+graph_data = from_networkx(G)
+
 with open(outfile, 'wb') as of:
-    datum = EpidemicInstance(G, X, Y, metadados)
+    datum = EpidemicInstance(graph_data, input_metrics, Y, metadados)
     pickle.dump(datum, of, pickle.HIGHEST_PROTOCOL)
 
 print(f"Saved output to {outfile}")
