@@ -1,0 +1,16 @@
+# General
+rd_seed: 0
+
+# Dataset parameters
+dataset:
+  path: /results/BA     # Path to the data set
+  inputs:
+    - OBS_I   # Observed infected nodes (MUST ALWAYS BE GIVEN AS AN INPUT)
+    - DEG     # Nodes degrees
+    - CONT    # Contact measure -- fraction of neighbors that are observed as infected
+    - BETW    # Betweenness metric
+    - OBS_B   # Betweenness with both source and target sets being observed infected nodes
+
+model:
+  dim_layer: 128
+# TODO: Verificar quais outros parâmetros vamos precisar
