@@ -42,7 +42,7 @@ class EpidemicDataset(Dataset):
 
             path = f"{folder}/{filename}"
             with open(path, "rb") as f:
-                print(filename)
+                # print(filename)
                 ins = pickle.load(f)
 
                 data_point = ins.G
@@ -62,10 +62,10 @@ class EpidemicDataset(Dataset):
                 data_point.y = ins.y.unsqueeze(-1)
 
                 self.data += [data_point]
-                print(data_point)
+                # print(data_point)
 
     def __len__(self):
-        return len(self.y)
+        return len(self.data)
 
     def __getitem__(self, index):
         return self.data[index]
