@@ -22,6 +22,8 @@ class EpidemicDataset(Dataset):
 
     # TODO: Docstring
 
+    # FIXME: Será que seria melhor ler o arquivo na hora que fosse usar só? (Por questões de memória) Isso seria factível?
+
     def __init__(self, folder, inputs):
         # TODO: Quais os argumentos que queremos dar de entrada? Precisamos inicializar o init da classe Dataset?
         #   Como fazer a organização dos dados?
