@@ -11,7 +11,12 @@ dataset:
     - CONT    # Contact measure -- fraction of neighbors that are observed as infected
     - BETW    # Betweenness metric
     - OBS_B   # Betweenness with both source and target sets being observed infected nodes
+  batch_size: 10
 
 model:
   dim_layer: 128
+  training:
+    learning_rate: 0.01
+    n_epochs: 1000
+
 # TODO: Verificar quais outros parâmetros vamos precisar
