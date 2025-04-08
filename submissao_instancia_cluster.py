@@ -28,7 +28,7 @@ er_p = 0.3
 adjacency_path = None
 adjacency_name = None
 
-# Epidec parameters
+# Epidemic parameters
 beta = [0.1, 0.2]
 i_infected = 1
 tot_time = 0

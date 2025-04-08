@@ -5,7 +5,7 @@
 import os
 import pickle
 import torch
-from torch.utils.data import Dataset
+from torch_geometric.data import Dataset
 
 
 class EpidemicInstance:
@@ -30,6 +30,7 @@ class EpidemicDataset(Dataset):
         self.path = folder
         self.inputs = inputs
         self.data = []
+        # self.transform = transforms.Compose([transforms.ToTensor()])
         self.read_instances(folder)
 
     def read_instances(self, folder):
@@ -39,7 +40,11 @@ class EpidemicDataset(Dataset):
             raise ValueError(f"Directory '{folder}' not found")
 
         for filename in os.listdir(folder):
+            # TODO: Add logger, and this message in the debug setting
+            # print(f"\t EpidemicDataset: Reading from file {filename}")
+
             if filename[-4:] != ".pkl":
+                # print("\t EpidemicDataset: \tDisregarding file")
                 continue
 
             path = f"{folder}/{filename}"
@@ -71,3 +76,6 @@ class EpidemicDataset(Dataset):
 
     def __getitem__(self, index):
         return self.data[index]
+
+    def all_data(self):
+        return self.data
