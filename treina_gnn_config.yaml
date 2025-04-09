@@ -1,10 +1,10 @@
 # General
 rd_seed: 0
-output_path: ../DadosAssintomáticos/testes_iniciais_treino   # Where to save the trained model and other outputs
+output_path: ../dataset/results/BA   # Where to save the trained model and other outputs
 
 # Dataset parameters
 dataset:
-  path: ../DadosAssintomáticos/basicoERparaTeste        # Path to the data set
+  path: ../dataset/results/BA       # Path to the data set
   inputs:
     - OBS_I   # Observed infected nodes (MUST ALWAYS BE GIVEN AS AN INPUT)
     - DEG     # Nodes degrees
@@ -18,7 +18,7 @@ dataset:
 model:
   dim_layer: 128
   training:
-    learning_rate: 0.01
-    n_epochs: 10
+    learning_rate: 0.001
+    n_epochs: 100
 
 # TODO: Verificar quais outros parâmetros vamos precisar
