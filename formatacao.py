@@ -17,59 +17,59 @@ class EpidemicInstance:
         self.metadados = metadados
 
 
+import os
+import pickle
+import torch
+from torch.utils.data import Dataset  # ou de torch_geometric.data, se necessário
+#from epidemic_instance import EpidemicInstance  # ajuste conforme onde estiver definido
+
 class EpidemicDataset(Dataset):
-    # TODO: classe para ler os .pkl de cada instãncia e concatenar num dat set só para a GNN
-
-    # TODO: Docstring
-
-    # FIXME: Será que seria melhor ler o arquivo na hora que fosse usar só? (Por questões de memória) Isso seria factível?
+    """
+    Dataset para carregar arquivos .pkl contendo instâncias da simulação epidêmica,
+    gerando grafos com features para treinar GNNs.
+    """
 
     def __init__(self, folder, inputs):
-        # TODO: Quais os argumentos que queremos dar de entrada? Precisamos inicializar o init da classe Dataset?
-        #   Como fazer a organização dos dados?
+        """
+        Args:
+            folder (str): Caminho da pasta contendo os arquivos .pkl.
+            inputs (list[str]): Lista com os nomes das features a serem usadas como entrada (ex: ['OBS_I', 'DEG', ...])
+        """
         self.path = folder
         self.inputs = inputs
         self.data = []
-        # self.transform = transforms.Compose([transforms.ToTensor()])
         self.read_instances(folder)
 
     def read_instances(self, folder):
-        # TODO: Read all .pkl files in the directory 'folder' and concatenate them accordingly
-
+        """
+        Lê todos os arquivos .pkl no diretório e extrai os grafos (data_point) com
+        features combinadas.
+        """
         if not os.path.exists(folder):
             raise ValueError(f"Directory '{folder}' not found")
 
         for filename in os.listdir(folder):
-            # TODO: Add logger, and this message in the debug setting
-            # print(f"\t EpidemicDataset: Reading from file {filename}")
-
-            if filename[-4:] != ".pkl":
-                # print("\t EpidemicDataset: \tDisregarding file")
+            if not filename.endswith(".pkl"):
                 continue
 
-            path = f"{folder}/{filename}"
+            path = os.path.join(folder, filename)
             with open(path, "rb") as f:
-                # print(filename)
                 ins = pickle.load(f)
 
-                data_point = ins.G
+            if not isinstance(ins, EpidemicInstance):
+                print(f"⚠️ Warning: File '{filename}' is not a valid EpidemicInstance (got {type(ins)}). Skipping.")
+                continue
 
-                if not isinstance(ins, EpidemicInstance):
-                    print(type(ins))
-                    print(f"Error while reading file '{filename}'. May be corrupted?")
+            data_point = ins.G
 
+            # Concatena os tensores de entrada
+            try:
                 metrics = [ins.X[inp].unsqueeze(-1) for inp in self.inputs]
-                # (observed_tensor.unsqueeze(-1),
-                # degree_tensor.unsqueeze(-1),
-                # contact_tensor.unsqueeze(-1),
-                # betweenness_tensor.unsqueeze(-1),
-                # observ_betweenness_tensor.unsqueeze(-1))
-
                 data_point.x = torch.cat(metrics, dim=-1)
-                data_point.y = ins.y.unsqueeze(-1)
-
-                self.data += [data_point]
-                # print(data_point)
+                data_point.y = ins.y.float().unsqueeze(-1)  # Saída esperada: [N, 1]
+                self.data.append(data_point)
+            except KeyError as e:
+                print(f"❌ KeyError: '{e}' não encontrado em ins.X ao processar '{filename}'. Pulando arquivo.")
 
     def __len__(self):
         return len(self.data)
@@ -79,3 +79,4 @@ class EpidemicDataset(Dataset):
 
     def all_data(self):
         return self.data
+

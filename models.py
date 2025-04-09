@@ -25,23 +25,20 @@ class GCN(torch.nn.Module):
         x = F.relu(x)
         x = F.dropout(x, p=0.2, training=self.training)
         x = self.conv2(x, data.edge_index)
-        x = F.softmax(x)
+        x = F.sigmoid(x)
         return x
 
 
-def train(model, loader, optimizer, device,epochs):
-    model.train()
-    total_loss = 0
+def train(model, loader, optimizer, device,epochs):    
     criterion = BCEWithLogitsLoss()
     for epoch in range(epochs):
+        model.train()
+        total_loss = 0
         for data in loader:
             data = data.to(device)
             optimizer.zero_grad()
-            out = model(data)  # out.shape: [N, 1]
-
-            # Garante que y está em float e no mesmo shape
+            out = model(data)
             y = data.y.float().view(-1, 1)
-
             loss = criterion(out, y)
             loss.backward()
             optimizer.step()
