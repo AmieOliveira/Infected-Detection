@@ -12,6 +12,8 @@ dataset:
     - BETW    # Betweenness metric
     - OBS_B   # Betweenness with both source and target sets being observed infected nodes
   batch_size: 2
+  split_seed: 0
+  split_prop: 0.8
 
 model:
   dim_layer: 128

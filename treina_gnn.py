@@ -59,6 +59,14 @@ dat_parser.add_argument(
     "--batch-size", "--batch", "-b", type=int,
     help="Batch size parameter."
 )
+dat_parser.add_argument(
+    "--split-seed", "--sSeed", type=int,
+    help="Random seed for the data set splitting."
+)
+dat_parser.add_argument(
+    "--split-prop", "--sProp", type=int,
+    help="Proportion of the data set that should be used for training."
+)
 
 mod_parser = parser.add_argument_group(
     "GNN Model arguments",
@@ -108,10 +116,15 @@ dataset = EpidemicDataset(data_path, input_fields)
 print(f"Created data set of length {len(dataset)}")
 
 #   2.2 Split into train and test sets
+split_seed = args.split_seed if args.split_seed else cfg["dataset"]["split_seed"]
+split_prop = args.split_prop if args.split_prop else cfg["dataset"]["split_prop"]
+if split_prop > 1 or split_prop < 0:
+    raise ValueError(f"Split proportion should be a number between 0 and 1 and {split_prop} was provided")
+
 train_dataset, test_dataset = torch.utils.data.random_split(
     dataset=dataset,
-    lengths=[0.8, 0.2],
-    generator=torch.Generator().manual_seed(int(np.random.random()*100)),
+    lengths=[split_prop, 1 - split_prop],
+    generator=torch.Generator().manual_seed(split_seed),
 )
 print(f"Split data into train ({len(train_dataset)} instances) and test ({len(test_dataset)} instances) sets")
 
@@ -148,6 +161,8 @@ train(
     device,
     n_epochs,
 )
+# FIXME: Loss só aumenta deve ter algum bug
+
 # FIXME: O treino não deveria receber o test_loader tb?
 
 print("Successfully finished training!")
