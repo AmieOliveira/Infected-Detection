@@ -91,7 +91,7 @@ epi_parser = parser.add_argument_group(
                 "in the configuration file ",
 )
 epi_parser.add_argument(
-    "--beta", "-b", type=float,
+    "--beta", "-b", nargs="+", default=None,
     help="Probability of an infected node infecting an adjacent \n"
          "susceptible one"
 )
@@ -109,7 +109,7 @@ epi_parser.add_argument(
          "stops (set to 0 to disable)"
 )
 epi_parser.add_argument(
-    "--observ", "--observ-prob", "-o", type=float,
+    "--observ", "--observ-prob", "-o", nargs="+", default=None,
     help="Probability of an infected node being identified as \n"
          "infected"
 )
@@ -121,9 +121,9 @@ print(f"Reading configurations from {config_file}")
 with open(config_file, "r") as f:
     cfg = yaml.load(f, Loader=yaml.SafeLoader)
 
-seed = args.seed
-if not seed:
-    seed = cfg["rd_seed"]
+seed = cfg["rd_seed"]
+if args.seed:
+    seed += args.seed
 np.random.seed(seed)
 
 metadados = {
@@ -187,11 +187,16 @@ else:
 print(f"Created graph: {G}")
 
 # 3. Create epidemic
-beta = args.beta if args.beta else cfg["epidemic"]["beta"]
+beta_choices = args.beta if args.beta else cfg["epidemic"]["beta"]
+observ_prob_choices = args.observ if args.observ else cfg["epidemic"]["observ_prob"]
+
+beta = np.random.choice(beta_choices, 1)[0]
+observ_prob = np.random.choice(observ_prob_choices, 1)[0]
+print(f"Infection rate is {beta}, observation probability is {observ_prob}")
+
 init_infec = args.initial_infection if args.initial_infection else cfg["epidemic"]["init_infec"]
 total_time = args.time if args.time else cfg["epidemic"]["total_time"]
 stop_frac = args.stop if args.stop else cfg["epidemic"]["stop_frac"]
-observ_prob = args.observ if args.observ else cfg["epidemic"]["observ_prob"]
 
 metadados["epidemic"] = {
     "beta": beta,
@@ -199,6 +204,8 @@ metadados["epidemic"] = {
     "total_time": total_time,
     "stop_frac": stop_frac,
     "observ_prob": observ_prob,
+    "beta_choices": beta_choices,
+    "observ_prob_choices": observ_prob_choices,
 }
 
 infected_nodes = epidemic.si_epidemic(G, beta, init_infec, total_time, stop_frac)
@@ -243,9 +250,11 @@ keys.sort()
 for key in keys:
     if key != "type":
         params += f"{key}{metadados['model'][key]}"
-epinfo = f"b{beta}-ii{init_infec}-t{total_time}-f{stop_frac}-o{observ_prob}"
+epinfo = f"ii{init_infec}-t{total_time}-f{stop_frac}"
+# Note: Removed beta and observ_prob values from instance name due to the cluster setup
 
-outfile = f"{outpath}/instance_model{net_model}-{params}_epidemic-{epinfo}_s{seed}.pkl"
+runIdx = f"run{args.seed}" if args.seed else f"s{seed}"
+outfile = f"{outpath}/instance_model{net_model}-{params}_epidemic-{epinfo}_{runIdx}.pkl"
 
 graph_data = from_networkx(G)
 

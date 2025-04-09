@@ -13,13 +13,13 @@ import random as rd
 base_folder = "results"
 
 # Random seed
-base_seed = 463
-change_seed = False
+base_seed = 0
 
 experiment_name = "test"
+n_instances = 10
 
 # Network parameters
-model = "WS"  # "WS", "ER", "adjacency"
+model = "WS"    # "BA", "WS", "ER", "adjacency"
 n_nodes = 20
 ba_m = 2
 ws_k = 4
@@ -29,11 +29,11 @@ adjacency_path = None
 adjacency_name = None
 
 # Epidemic parameters
-beta = [0.1, 0.2]
+beta = [0.1, 0.3, 0.5]
 i_infected = 1
 tot_time = 0
-stop_fraction = [0.2, 0.3]
-observation_prob = [0.5, 0.7]
+stop_fraction = [0.2]
+observation_prob = [0.1, 0.25, 0.5, 0.75, 0.9]
 # --------------------------------
 
 # -------------
@@ -68,11 +68,11 @@ configs = {
         "ER": {"p": er_p},
     },
     "epidemic": {
-        "beta": beta if type(beta) != list else beta[0],
+        "beta": beta,
         "init_infec": i_infected,
         "total_time": tot_time,
         "stop_frac": stop_fraction if type(stop_fraction) != list else stop_fraction[0],
-        "observ_prob": observation_prob if type(observation_prob) != list else observation_prob[0],
+        "observ_prob": observation_prob,
     },
 }
 
@@ -101,34 +101,27 @@ with open(s_filename, "w") as subfile:
     subfile.write(f'transfer_output_remaps\t\t= "{w_dir}/formatacao.py = formatacao.py"\n')
     subfile.write(f'transfer_output_remaps\t\t= "{w_dir}/{c_filename} = {c_name}"\n')
 
-    s = base_seed
+    for f in stop_fraction:
 
-    for b in beta:
-        for f in stop_fraction:
-            for o in observation_prob:
-                if change_seed:
-                    s += rd.randint(-10, 10)
+        params = ""
+        if model != "adjacency":
+            configs["network"][model]["n"] = n_nodes
+        keys = list(configs["network"][model].keys())
+        keys.sort()
+        for key in keys:
+            params += f"{key}{configs['network'][model][key]}"
 
-                params = ""
-                if model != "adjacency":
-                    configs["network"][model]["n"] = n_nodes
-                keys = list(configs["network"][model].keys())
-                keys.sort()
-                for key in keys:
-                    params += f"{key}{configs['network'][model][key]}"
+        epinfo = f"ii{i_infected}-t{tot_time}-f{f}"
 
-                epinfo = f"b{b}-ii{i_infected}-t{tot_time}-f{f}-o{o}"
+        outfilename = f"instance_model{model}-{params}_epidemic-{epinfo}_run$(Step).pkl"
 
-                outfilename = f"instance_model{model}-{params}_epidemic-{epinfo}_s{s}.pkl"
-
-                subfile.write(f"\n\n")
-                subfile.write(f'Arguments\t\t\t\t= "{c_name} -b {b} -f {f} -o {o} -s {s} -d ."\n')
-                subfile.write(f"Log\t\t\t\t\t= {w_dir}/log/{base_name}.log\n")
-                subfile.write(f"Error\t\t\t\t\t= {w_dir}/error/{base_name}_b{b}_f{f}_o{o}_s{s}.err\n")
-                subfile.write(f"Output\t\t\t\t\t= {w_dir}/out/{base_name}_b{b}_f{f}_o{o}_s{s}.out\n")
-                subfile.write(f"transfer_output_files\t= {outfilename}\n")
-                subfile.write(f"Queue 1")
-    # TODO: Definir o nome do arquivo de saída para terminar o arquivo de configuração
+        subfile.write(f"\n\n")
+        subfile.write(f'Arguments\t\t\t\t= "{c_name} -f {f} -s $(Step) -d ."\n')
+        subfile.write(f"Log\t\t\t\t\t\t= {w_dir}/log/{base_name}.log\n")
+        subfile.write(f"Error\t\t\t\t\t= {w_dir}/error/{base_name}_f{f}_run$(Step).err\n")
+        subfile.write(f"Output\t\t\t\t\t= {w_dir}/out/{base_name}_f{f}_run$(Step).out\n")
+        subfile.write(f"transfer_output_files\t= {outfilename}\n")
+        subfile.write(f"Queue {n_instances}")
 
     print(f"Wrote submission file to path: {s_filename}")
 # ----------------------

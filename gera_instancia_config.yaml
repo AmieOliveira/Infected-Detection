@@ -1,5 +1,5 @@
 # General
-rd_seed: 0
+rd_seed: 10
 
 # Network creation configurations
 network:
@@ -17,9 +17,15 @@ network:
 
 # Epidemic parametrization
 epidemic:
-  beta: 0.1             # Probability of an infected node infecting an adjacent susceptible one
+  beta:                 # Probability of an infected node infecting an adjacent susceptible one
+    - 0.1
+    - 0.3
   init_infec: 1         # Number of initial infected nodes
   total_time: 0         # Total time of simulation (set to 0 to disable)
   stop_frac: 0.2        # Maximum fraction of infected nodes before simulation stops (set to 0 to disable)
-  observ_prob: 0.7      # Probability of an infected node being identified as infected
-
+  observ_prob:          # Probability of an infected node being identified as infected
+    - 0.1
+    - 0.25
+    - 0.5
+    - 0.75
+    - 0.9
