@@ -18,7 +18,7 @@ class GCN(torch.nn.Module):
     ):
         super().__init__()
         self.conv1 = GCNConv(dim_in, dim_layer)
-        self.conv2 = GCNConv(dim_layer, dim_out)    # ultima dimensao vai ser a dimensao de G.H
+        self.conv2 = GCNConv(dim_layer, dim_out)
 
     def forward(self, data):
         x = self.conv1(data.x, data.edge_index)
