@@ -1,10 +1,10 @@
 # General
 rd_seed: 0
-output_path: ../dataset/results/BA   # Where to save the trained model and other outputs
+output_path: C:\Users\conra\OneDrive\Documentos\Epidemia_GNN\Infected-Detection\results\WS  # Where to save the trained model and other outputs
 
 # Dataset parameters
 dataset:
-  path: ../dataset/results/BA       # Path to the data set
+  path: C:\Users\conra\OneDrive\Documentos\Epidemia_GNN\Infected-Detection\results\WS       # Path to the data set
   inputs:
     - OBS_I   # Observed infected nodes (MUST ALWAYS BE GIVEN AS AN INPUT)
     - DEG     # Nodes degrees
@@ -19,6 +19,6 @@ model:
   dim_layer: 128
   training:
     learning_rate: 0.001
-    n_epochs: 100
+    n_epochs: 2
 
 # TODO: Verificar quais outros parâmetros vamos precisar
