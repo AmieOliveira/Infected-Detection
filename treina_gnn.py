@@ -11,6 +11,7 @@ import torch
 from torch_geometric.loader import DataLoader
 from formatacao import EpidemicDataset
 from models import GCN, train
+from avaliacao import auc_statistics
 
 print("Starting script")
 
@@ -168,5 +169,10 @@ train(
 print("Successfully finished training!")
 
 # TODO: Salvar modelo
-# TODO: Avaliar modelo -- e salvar análises no conjunto de treino e de teste
 
+# TODO: Avaliar modelo
+stats_train = auc_statistics(train_dataset, model)
+if len(test_dataset) > 0:
+    stats_test = auc_statistics(test_dataset, model)
+
+# TODO: Terminar as funções de avaliação e salvar os resultados (definir nome dos arquivos, etc.)
