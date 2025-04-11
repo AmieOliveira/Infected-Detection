@@ -226,5 +226,3 @@ s_path = os.path.join(outpath, s_filename)
 with open(s_path, "w") as yamlfile:
     data = yaml.dump(stats, yamlfile)
     print(f"Wrote configuration file to path: {s_path}")
-
-# TODO: Terminar as funções de avaliação e salvar os resultados (definir nome dos arquivos, etc.)
