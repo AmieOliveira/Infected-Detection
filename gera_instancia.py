@@ -215,8 +215,6 @@ metadados["epidemic"] = {
     "observ_prob_choices": observ_prob_choices,
 }
 
-print(metadados)
-
 infected_nodes = epidemic.si_epidemic(G, beta, init_infec, total_time, stop_frac)
 
 observ_infec = epidemic.observed_infected(infected_nodes, observ_prob)
@@ -251,6 +249,7 @@ input_metrics = {
 Y = torch.full((len(G),), 0.0)
 Y[infected_nodes] = 1
 print("Generated GNN data")
+print(f"Metadata: {metadados}")
 
 # 6. Format and save data
 params = ""
