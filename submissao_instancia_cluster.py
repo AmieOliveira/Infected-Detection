@@ -41,7 +41,7 @@ observation_prob = [0.1, 0.25, 0.5, 0.75, 0.9]
 # -------------
 if not os.path.exists(base_folder):
     os.makedirs(base_folder)
-folder = f"results/{model}"
+folder = f"{base_folder}/{model}"
 if not os.path.exists(folder):
     os.makedirs(folder)
 
