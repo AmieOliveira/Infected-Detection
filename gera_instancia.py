@@ -198,12 +198,10 @@ print(f"Infection rate is {beta}, observation probability is {observ_prob}")
 init_infec = args.initial_infection if args.initial_infection else cfg["epidemic"]["init_infec"]
 
 total_time = args.time if args.time else cfg["epidemic"]["total_time"]
-if total_time == 0:
-    total_time = None
+tt = total_time if total_time > 0 else None
 
 stop_frac = args.stop if args.stop else cfg["epidemic"]["stop_frac"]
-if stop_frac == 0:
-    stop_frac = None
+sf = stop_frac if stop_frac > 0 else None
 
 metadados["epidemic"] = {
     "beta": beta,
@@ -215,7 +213,7 @@ metadados["epidemic"] = {
     "observ_prob_choices": observ_prob_choices,
 }
 
-infected_nodes = epidemic.si_epidemic(G, beta, init_infec, total_time, stop_frac)
+infected_nodes = epidemic.si_epidemic(G, beta, init_infec, tt, sf)
 
 observ_infec = epidemic.observed_infected(infected_nodes, observ_prob)
 print(f"Generated epidemic! {len(infected_nodes)} infected and {len(observ_infec)} observed.")
