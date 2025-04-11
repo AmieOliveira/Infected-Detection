@@ -8,6 +8,7 @@ import argparse
 import yaml
 import numpy as np
 import torch
+import random
 from torch_geometric.loader import DataLoader
 from formatacao import EpidemicDataset
 from models import GCN, train
@@ -102,6 +103,9 @@ seed = args.seed
 if not seed:
     seed = cfg["rd_seed"]
 np.random.seed(seed)
+random.seed(seed)
+torch.manual_seed(seed)
+torch.cuda.manual_seed_all(seed)
 
 
 # 2. Create data set
@@ -172,7 +176,18 @@ print("Successfully finished training!")
 
 # TODO: Avaliar modelo
 stats_train = auc_statistics(train_dataset, model)
+stats = {"train": stats_train, "config": cfg}
+
 if len(test_dataset) > 0:
     stats_test = auc_statistics(test_dataset, model)
+    stats["test"] = stats_test
+
+
+# TODO: Escolher nome do arquivo de saída
+s_filename = "teste.txt"
+
+with open(s_filename, "w") as yamlfile:
+    data = yaml.dump(stats, yamlfile)
+    print(f"Wrote configuration file to path: {s_filename}")
 
 # TODO: Terminar as funções de avaliação e salvar os resultados (definir nome dos arquivos, etc.)

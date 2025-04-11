@@ -3,7 +3,7 @@ rd_seed: 0
 
 # Network creation configurations
 network:
-  model: BA       # adjacency, BA, WS, ER
+  model: WS       # adjacency, BA, WS, ER
   n_nodes: 30    # Number of nodes in the generated graph -- will be ignored if model is 'adjacency'
   adjacency:      # Arguments used if model is 'adjacency'
     path: /path/to/graph/file     # TODO: Define file format | It should be a list of lists representing the adjacency matrix
