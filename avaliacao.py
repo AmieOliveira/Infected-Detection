@@ -21,12 +21,16 @@ def auc_statistics(
 
     for idx in range(n_instances):
         ins = data[idx]
-        truth = ins.y.detach().numpy()
         # print(f"Evaluation instance {idx}: {ins}")
 
+        x_tensor = ins.x.detach().numpy()
+        observed_nodes = x_tensor.T[0]
+        truth = ins.y.detach().numpy()
+        evaluation_truth = truth[observed_nodes == 0]
         prediction = model(ins).detach().numpy()     # TODO: Confirmar isto...
+        evaluation_prediction = prediction[observed_nodes == 0]
 
-        auc = roc_auc_score(truth, prediction)   # prediction must be a list with the corresponding probability of being infected for each node
+        auc = roc_auc_score(evaluation_truth, evaluation_prediction)   # prediction must be a list with the corresponding probability of being infected for each node
         aucs[idx] = auc
 
         # TODO: get AUC from output and ground truth and add to the aucs array
