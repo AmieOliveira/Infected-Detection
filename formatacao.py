@@ -31,8 +31,17 @@ class EpidemicDataset(Dataset):
             inputs (list[str]): Lista com os nomes das features a serem usadas como entrada (ex: ['OBS_I', 'DEG', ...])
         """
         self.path = folder
-        self.inputs = inputs
         self.data = []
+        self.inputs = inputs
+        if "OBS_I" not in inputs:
+            self.inputs = ["OBS_I"] + inputs
+            print("⚠️ Warning: observed infected not in the inputs. They will be inserted by default. "
+                  f"New input list: {self.inputs}")
+        elif inputs[0] != "OBS_I":
+            self.inputs.remove("OBS_I")
+            self.inputs = ["OBS_I"] + inputs
+            print(f"Debug: Reordered input list: {self.inputs}")
+
         self.read_instances(folder)
 
     def read_instances(self, folder):
