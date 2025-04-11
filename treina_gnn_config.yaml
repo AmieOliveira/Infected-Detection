@@ -4,7 +4,7 @@ output_path: /path/to/output  # Where to save the trained model and other output
 
 # Dataset parameters
 dataset:
-  name: tests_BA    # Choose data set name for metadata saving
+  name: testsBA    # Choose data set name for metadata saving
   path: path/to/data      # Path to the data set
   inputs:
     - OBS_I   # Observed infected nodes (MUST ALWAYS BE GIVEN AS AN INPUT)
