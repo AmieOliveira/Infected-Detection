@@ -1,10 +1,11 @@
 # General
 rd_seed: 0
-output_path: C:\Users\conra\OneDrive\Documentos\Epidemia_GNN\Infected-Detection\results\WS  # Where to save the trained model and other outputs
+output_path: /path/to/output  # Where to save the trained model and other outputs
 
 # Dataset parameters
 dataset:
-  path: C:\Users\conra\OneDrive\Documentos\Epidemia_GNN\Infected-Detection\results\WS       # Path to the data set
+  name: tests_BA    # Choose data set name for metadata saving
+  path: path/to/data      # Path to the data set
   inputs:
     - OBS_I   # Observed infected nodes (MUST ALWAYS BE GIVEN AS AN INPUT)
     - DEG     # Nodes degrees
@@ -12,7 +13,7 @@ dataset:
     # - BETW    # Betweenness metric
     - OBS_B   # Betweenness with both source and target sets being observed infected nodes
   batch_size: 2
-  split_seed: 0
+  split_seed: 0   # Set to -1 for random
   split_prop: 0.8
 
 model:

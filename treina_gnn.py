@@ -9,6 +9,7 @@ import yaml
 import numpy as np
 import torch
 import random
+import os
 from torch_geometric.loader import DataLoader
 from formatacao import EpidemicDataset
 from models import GCN, train
@@ -88,7 +89,8 @@ mod_parser.add_argument(
     "--epochs", "-e", type=float,
     help="Number of training epochs to be performed."
 )
-# TODO: Finish argparse
+
+# TODO: Add logger
 
 args = parser.parse_args()
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -99,29 +101,38 @@ print(f"Reading configurations from {config_file}")
 with open(config_file, "r") as f:
     cfg = yaml.load(f, Loader=yaml.SafeLoader)
 
-seed = args.seed
-if not seed:
-    seed = cfg["rd_seed"]
+seed = cfg["rd_seed"]
+if args.seed:
+    seed += args.seed
 np.random.seed(seed)
 random.seed(seed)
 torch.manual_seed(seed)
 torch.cuda.manual_seed_all(seed)
 
+outpath = args.outpath
+if not args.outpath:
+    outpath = cfg["output_path"]
+
+metadados = {
+    "Random seed": seed,
+}
 
 # 2. Create data set
+data_name = cfg["dataset"]["name"]
 data_path = args.indir if args.indir else cfg["dataset"]["path"]
 input_fields = args.input_fields if args.input_fields else cfg["dataset"]["inputs"]
 print(f"Getting data from folder {data_path}.")
 print(f"Model will be trained with the following inputs: {input_fields}")
-# FIXME: Quero colocar hardcoded que o OBS_I deve ser um dos inputs?
 
 #   2.1 Main data set
 dataset = EpidemicDataset(data_path, input_fields)
 
-print(f"Created data set of length {len(dataset)}")
+print(f"Created data set with {len(dataset)} instances")
 
 #   2.2 Split into train and test sets
 split_seed = args.split_seed if args.split_seed else cfg["dataset"]["split_seed"]
+if split_seed == -1:
+    split_seed = int(1e5*random.random())
 split_prop = args.split_prop if args.split_prop else cfg["dataset"]["split_prop"]
 if split_prop > 1 or split_prop < 0:
     raise ValueError(f"Split proportion should be a number between 0 and 1 and {split_prop} was provided")
@@ -143,6 +154,18 @@ test_loader = torch.utils.data.DataLoader(
     dataset=test_dataset,
     batch_size=batch_size,
 )
+
+metadados["dataset"] = {
+    "name": data_name,
+    "path": data_path,
+    "inputs": dataset.inputs,
+    "size": len(dataset),
+    "batch_size": batch_size,
+    "split": {
+        "seed": split_seed,
+        "train_proportion": split_prop,
+    },
+}
 
 # 3. Create GNN model
 input_dims = dataset[0].x.shape[-1]
@@ -166,15 +189,29 @@ train(
     device,
     n_epochs,
 )
-# FIXME: Loss só aumenta deve ter algum bug
 
-# FIXME: O treino não deveria receber o test_loader tb?
+metadados["model"] = {
+    "dim_layer": dim_layer,
+    "learning_rate": l_rate,
+    "epochs": n_epochs,
+}
 
-print("Successfully finished training!")
+print("Successfully finished GNN training")
 
-# TODO: Salvar modelo
+# 5. Save the model
+m_info = f"model-dl{dim_layer}-lr{l_rate}-ep{n_epochs}"
+d_info = f"data-{data_name}"
+runIdx = f"run{args.seed}" if (args.seed is not None) else f"s{seed}"
 
-# TODO: Avaliar modelo
+outfilebase = f"{m_info}_{d_info}_{runIdx}"
+
+m_filename = f"model_{outfilebase}_.gnn"
+m_path = os.path.join(outpath, m_filename)
+
+torch.save(model, m_path)
+print(f"Wrote model to path: {m_path}")
+
+# 6. Evaluate the model and save statistics
 stats_train = auc_statistics(train_dataset, model)
 stats = {"train": stats_train, "config": cfg}
 
@@ -183,11 +220,11 @@ if len(test_dataset) > 0:
     stats["test"] = stats_test
 
 
-# TODO: Escolher nome do arquivo de saída
-s_filename = "teste.txt"
+s_filename = f"stats_{outfilebase}.dict"
+s_path = os.path.join(outpath, s_filename)
 
-with open(s_filename, "w") as yamlfile:
+with open(s_path, "w") as yamlfile:
     data = yaml.dump(stats, yamlfile)
-    print(f"Wrote configuration file to path: {s_filename}")
+    print(f"Wrote configuration file to path: {s_path}")
 
 # TODO: Terminar as funções de avaliação e salvar os resultados (definir nome dos arquivos, etc.)

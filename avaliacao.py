@@ -22,7 +22,7 @@ def auc_statistics(
     for idx in range(n_instances):
         ins = data[idx]
         truth = ins.y.detach().numpy()
-        print(f"Evaluation instance {idx}: {ins}")
+        # print(f"Evaluation instance {idx}: {ins}")
 
         prediction = model(ins).detach().numpy()     # TODO: Confirmar isto...
 
