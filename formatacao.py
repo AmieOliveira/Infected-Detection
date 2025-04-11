@@ -7,6 +7,7 @@ import pickle
 import torch
 from torch_geometric.data import Dataset
 
+# TODO: Add logger
 
 class EpidemicInstance:
     def __init__(self, graph, input_metrics, target, metadados):
@@ -16,12 +17,6 @@ class EpidemicInstance:
         self.y = target             # Ground truth dos nós infectados
         self.metadados = metadados
 
-
-import os
-import pickle
-import torch
-from torch.utils.data import Dataset  # ou de torch_geometric.data, se necessário
-#from epidemic_instance import EpidemicInstance  # ajuste conforme onde estiver definido
 
 class EpidemicDataset(Dataset):
     """
