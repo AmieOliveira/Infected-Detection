@@ -138,6 +138,7 @@ if not net_model:
 outpath = args.outpath
 if not outpath:
     outpath = f"results/{net_model}"
+# TODO: Add output path to config file
 
 metadados["model"] = {
         "type": net_model
@@ -195,8 +196,14 @@ observ_prob = np.random.choice(observ_prob_choices, 1)[0]
 print(f"Infection rate is {beta}, observation probability is {observ_prob}")
 
 init_infec = args.initial_infection if args.initial_infection else cfg["epidemic"]["init_infec"]
+
 total_time = args.time if args.time else cfg["epidemic"]["total_time"]
+if total_time == 0:
+    total_time = None
+
 stop_frac = args.stop if args.stop else cfg["epidemic"]["stop_frac"]
+if stop_frac == 0:
+    stop_frac = None
 
 metadados["epidemic"] = {
     "beta": beta,
@@ -207,6 +214,8 @@ metadados["epidemic"] = {
     "beta_choices": beta_choices,
     "observ_prob_choices": observ_prob_choices,
 }
+
+print(metadados)
 
 infected_nodes = epidemic.si_epidemic(G, beta, init_infec, total_time, stop_frac)
 
@@ -253,7 +262,7 @@ for key in keys:
 epinfo = f"ii{init_infec}-t{total_time}-f{stop_frac}"
 # Note: Removed beta and observ_prob values from instance name due to the cluster setup
 
-runIdx = f"run{args.seed}" if args.seed else f"s{seed}"
+runIdx = f"run{args.seed}" if (args.seed is not None) else f"s{seed}"
 outfile = f"{outpath}/instance_model{net_model}-{params}_epidemic-{epinfo}_{runIdx}.pkl"
 
 graph_data = from_networkx(G)
