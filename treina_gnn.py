@@ -213,7 +213,7 @@ print(f"Wrote model to path: {m_path}")
 
 # 6. Evaluate the model and save statistics
 stats_train = auc_statistics(train_dataset, model)
-stats = {"train": stats_train, "config": cfg}
+stats = {"train": stats_train, "config": metadados}
 
 if len(test_dataset) > 0:
     stats_test = auc_statistics(test_dataset, model)
