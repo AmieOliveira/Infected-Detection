@@ -15,12 +15,12 @@ base_folder = "results"
 # Random seed
 base_seed = 0
 
-experiment_name = "test"
-n_instances = 10
+experiment_name = "WS_3knodes"
+n_instances = 1000
 
 # Network parameters
 model = "WS"    # "BA", "WS", "ER", "adjacency"
-n_nodes = 20
+n_nodes = 3000
 ba_m = 2
 ws_k = 4
 ws_p = 0.3
@@ -100,6 +100,7 @@ with open(s_filename, "w") as subfile:
     subfile.write(f'transfer_output_remaps\t\t= "{w_dir}/centrality.py = centrality.py"\n')
     subfile.write(f'transfer_output_remaps\t\t= "{w_dir}/formatacao.py = formatacao.py"\n')
     subfile.write(f'transfer_output_remaps\t\t= "{w_dir}/{c_filename} = {c_name}"\n')
+    subfile.write('requirements = (Machine == "node04") || (Machine == "node03") || (Machine == "node01")')
 
     for f in stop_fraction:
 
