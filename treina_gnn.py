@@ -149,6 +149,7 @@ batch_size = args.batch_size if args.batch_size else cfg["dataset"]["batch_size"
 train_loader = DataLoader(
     dataset=dataset,
     batch_size=batch_size,
+    shuffle=True
 )
 test_loader = torch.utils.data.DataLoader(
     dataset=test_dataset,
@@ -177,7 +178,7 @@ model = GCN(
     dim_layer=dim_layer,
     dim_out=1
 ).to(device)
-optimizer = torch.optim.Adam(model.parameters(), lr=l_rate)
+optimizer = torch.optim.Adam(model.parameters(), lr=l_rate,weight_decay=5e-4)
 
 # 4. Train model
 n_epochs = args.epochs if args.epochs else cfg["model"]["training"]["n_epochs"]
@@ -212,11 +213,11 @@ torch.save(model, m_path)
 print(f"Wrote model to path: {m_path}")
 
 # 6. Evaluate the model and save statistics
-stats_train = auc_statistics(train_dataset, model)
+stats_train = auc_statistics(train_dataset, model,device)
 stats = {"train": stats_train, "config": metadados}
-
+print(stats)
 if len(test_dataset) > 0:
-    stats_test = auc_statistics(test_dataset, model)
+    stats_test = auc_statistics(test_dataset, model,device)
     stats["test"] = stats_test
 
 

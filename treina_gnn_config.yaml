@@ -1,25 +1,25 @@
 # General
 rd_seed: 0
-output_path: /path/to/output  # Where to save the trained model and other outputs
+output_path: /home/users/rluna/epidemics/dataset/results/BA/  # Where to save the trained model and other outputs
 
 # Dataset parameters
 dataset:
-  name: testsWS    # Choose data set name for metadata saving
-  path: path/to/data      # Path to the data set
+  name: testsBA    # Choose data set name for metadata saving
+  path: /home/users/rluna/epidemics/dataset/results/BA/      # Path to the data set
   inputs:
     - OBS_I   # Observed infected nodes (MUST ALWAYS BE GIVEN AS AN INPUT)
     - DEG     # Nodes degrees
     - CONT    # Contact measure -- fraction of neighbors that are observed as infected
     # - BETW    # Betweenness metric
     - OBS_B   # Betweenness with both source and target sets being observed infected nodes
-  batch_size: 2     # Training batch size
+  batch_size: 1     # Training batch size
   split_seed: 0     # Random seed to be used for data set splitting. Set to -1 for random.
-  split_prop: 0.9   # Proportion of the data set that should be used for training (remainder will be used as the test set).
+  split_prop: 0.8   # Proportion of the data set that should be used for training (remainder will be used as the test set).
 
 model:
   dim_layer: 128          # Dimension of the latent space vector
   training:
     learning_rate: 0.001  # Training learning rate
-    n_epochs: 100         # Number of training epochs
+    n_epochs: 10       # Number of training epochs
 
 # TODO: Verificar quais outros parâmetros vamos precisar

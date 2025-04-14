@@ -7,6 +7,7 @@ import pickle
 import torch
 from torch_geometric.data import Dataset
 
+
 # TODO: Add logger
 
 class EpidemicInstance:
@@ -75,6 +76,9 @@ class EpidemicDataset(Dataset):
             except KeyError as e:
                 print(f"❌ KeyError: '{e}' não encontrado em ins.X ao processar '{filename}'. Pulando arquivo.")
 
+    def len(self):
+        return len(self.data)
+        
     def __len__(self):
         return len(self.data)
 
@@ -83,4 +87,7 @@ class EpidemicDataset(Dataset):
 
     def all_data(self):
         return self.data
+    
+    def get(self, idx):
+        return self.data[idx]
 

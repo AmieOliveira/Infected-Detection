@@ -19,12 +19,12 @@ class GCN(torch.nn.Module):
         super().__init__()
         self.conv1 = GCNConv(dim_in, dim_layer)
         self.conv2 = GCNConv(dim_layer, dim_out)
+        #self.conv3 = GCNConv(dim_layer, dim_out)
 
     def forward(self, data):
         x = self.conv1(data.x, data.edge_index)
         x = F.relu(x)
-        x = F.dropout(x, p=0.2, training=self.training)
-        x = self.conv2(x, data.edge_index)
+        x = self.conv2(x, data.edge_index)        
         x = F.sigmoid(x)
         return x
 
@@ -39,7 +39,16 @@ def train(model, loader, optimizer, device,epochs):
             optimizer.zero_grad()
             out = model(data)
             y = data.y.float().view(-1, 1)
-            loss = criterion(out, y)
+            x = data.x[:,0].unsqueeze(-1)
+            mask = x!=y
+            tot_non_observed = mask.sum()
+            observed = torch.sum(y[y==1])
+            frac = tot_non_observed/observed
+            #print(frac)
+            
+            loss = criterion(out[mask], y[mask])
+            if(frac<0.5):
+                continue
             loss.backward()
             optimizer.step()
             total_loss += loss.item()
