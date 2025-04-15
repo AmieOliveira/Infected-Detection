@@ -15,7 +15,7 @@ base_folder = "results"
 # Random seed
 base_seed = 0
 
-experiment_name = "WS_3knodes"
+experiment_name = "experiment_name"
 n_instances = 1000
 
 # Network parameters
@@ -41,7 +41,7 @@ observation_prob = [0.1, 0.25, 0.5, 0.75, 0.9]
 # -------------
 if not os.path.exists(base_folder):
     os.makedirs(base_folder)
-folder = f"{base_folder}/{model}"
+folder = f"{base_folder}/{model}/{experiment_name}"
 if not os.path.exists(folder):
     os.makedirs(folder)
 
