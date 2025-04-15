@@ -14,8 +14,9 @@ def auc_statistics(
         model: GCN,
         device: 'cpu',
 ):
-    model.eval()
     # TODO: Documentation
+
+    model.eval()
     n_instances = len(data)
     aucs = np.ndarray(n_instances)
 
