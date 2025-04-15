@@ -34,7 +34,7 @@ network models:
  - `ER`: the Erdös-Rényi or G(n,p) model.
 
 One can also specify a predefined model, which should be saved in the 
-[https://networkx.org/documentation/stable/index.html](NetworkX) package format.
+[NetworkX](https://networkx.org/documentation/stable/index.html) package format.
 
 To use the script as it is (which will generate an epidemic in a WS graph with 
 30 nodes), one can simply run:
