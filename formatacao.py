@@ -43,6 +43,8 @@ class EpidemicDataset(Dataset):
             self.inputs = ["OBS_I"] + inputs
             print(f"Debug: Reordered input list: {self.inputs}")
 
+        self.obs_b_pos = None if not ("OBS_B" in self.inputs) else self.inputs.index("OBS_B")
+
         self.read_instances(folder)
 
     def read_instances(self, folder):
@@ -72,7 +74,11 @@ class EpidemicDataset(Dataset):
                 metrics = [ins.X[inp].unsqueeze(-1) for inp in self.inputs]
                 data_point.x = torch.cat(metrics, dim=-1)
                 data_point.y = ins.y.float().unsqueeze(-1)  # Saída esperada: [N, 1]
+                if not self.obs_b_pos:
+                    data_point.obs_b = ins.X["OBS_B"].unsqueeze(-1)
+
                 self.data.append(data_point)
+
             except KeyError as e:
                 print(f"❌ KeyError: '{e}' não encontrado em ins.X ao processar '{filename}'. Pulando arquivo.")
 
@@ -91,3 +97,8 @@ class EpidemicDataset(Dataset):
     def get(self, idx):
         return self.data[idx]
 
+    def get_observed_betweenness(self, idx):
+        if self.obs_b_pos:
+            return self.data[idx].x[self.obs_b_pos]
+        else:
+            return self.data[idx].obs_b

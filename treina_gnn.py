@@ -207,18 +207,19 @@ runIdx = f"run{args.seed}" if (args.seed is not None) else f"s{seed}"
 
 outfilebase = f"{m_info}_{d_info}_{runIdx}"
 
-m_filename = f"model_{outfilebase}_.gnn"
+m_filename = f"model_{outfilebase}.gnn"
 m_path = os.path.join(outpath, m_filename)
 
 torch.save(best_model, m_path)
 print(f"Wrote Best model to path: {m_path}")
 
 # 6. Evaluate the model and save statistics
-stats_train = auc_statistics(train_dataset, model,device)
+input_fields = dataset.inputs
+stats_train = auc_statistics(train_dataset, model, device, input_fields)
 stats = {"train": stats_train, "config": metadados}
 print(stats)
 if len(test_dataset) > 0:
-    stats_test = auc_statistics(test_dataset, model,device)
+    stats_test = auc_statistics(test_dataset, model, device, input_fields)
     stats["test"] = stats_test
 
 
@@ -227,4 +228,4 @@ s_path = os.path.join(outpath, s_filename)
 
 with open(s_path, "w") as yamlfile:
     data = yaml.dump(stats, yamlfile)
-    print(f"Wrote configuration file to path: {s_path}")
+    print(f"Wrote training statistics to file: {s_path}")

@@ -72,4 +72,9 @@ Before running the script, make sure to overwrite the ``output_path`` and the
 training statistics should be saved and the path where the data set is stored,
 respectively. 
 
-# TODO: Terminar!
+...
+
+## GNN Evaluation
+...
+
+

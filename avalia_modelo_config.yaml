@@ -1,0 +1,16 @@
+# General
+rd_seed: 0
+output_path: ../Dados/evaluation  # Where to save the trained model and other outputs
+
+# Dataset parameters
+dataset:
+  name: testsBA    # Choose data set name for metadata saving
+  path: ../Dados/instances/someWSresults      # Path to the data set
+
+# GNN model parameters
+model:
+  name: test
+  path: ../Dados/training
+  filebase: model-dl128-lr0.001-ep10_data-testsBA_s0
+
+
