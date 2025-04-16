@@ -72,7 +72,7 @@ def contact_k_vector(graph, observed_nodes, k):
     """
     contact_k = {}
     for node in graph.nodes():
-        neighbors = list(nx.single_source_shortest_path_length(graph, node, cutoff=k).keys())
+        neighbors = nx.single_source_shortest_path_length(graph, node, cutoff=k).keys()
         fractions = []
         for dist in range(1, k+1):
             dist_neighbors = [n for n, d in neighbors.items() if d == dist]
