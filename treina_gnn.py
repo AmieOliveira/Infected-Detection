@@ -53,7 +53,7 @@ dat_parser.add_argument(
 )
 dat_parser.add_argument(
     "--input-fields", "--inputs", nargs="+",
-    choices=["OBS_I", "DEG", "CONT", "BETW", "OBS_B"],
+    choices=["OBS_I", "DEG", "CONT", "CONT_2", "CONT_3", "CONT_k2", "BETW", "OBS_B"],
     help="List all input variables to be given to the model \n"
          "(separated by spaces. Note that the observed infected \n"
          "nodes ('OBS_I') should be always provided as input.",
