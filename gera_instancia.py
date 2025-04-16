@@ -242,7 +242,7 @@ input_metrics = {
     "OBS_I": observed_tensor,
     "DEG": degree_tensor,
     "CONT": contact_tensor,
-    "CONT_k": contact_k_tensor,
+    "CONT_2": contact_k_tensor,
     "BETW": betweenness_tensor,
     "OBS_B": observ_betweenness_tensor,
 }

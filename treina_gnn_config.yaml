@@ -10,6 +10,7 @@ dataset:
     - OBS_I   # Observed infected nodes (MUST ALWAYS BE GIVEN AS AN INPUT)
     - DEG     # Nodes degrees
     - CONT    # Contact measure -- fraction of neighbors that are observed as infected
+    - CONT_2  # Contact-2 -- fraction of observed infected nodes within distance 2 of the target node
     - BETW    # Betweenness metric
     - OBS_B   # Betweenness with both source and target sets being observed infected nodes
   batch_size: 128     # Training batch size
