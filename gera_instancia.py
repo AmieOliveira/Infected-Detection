@@ -222,6 +222,7 @@ print(f"Generated epidemic! {len(infected_nodes)} infected and {len(observ_infec
 # 4. Compute network centralities
 degree = centrality.degree(G)
 contact = centrality.contact(G, observ_infec)
+contact_k_vector = centrality.contact_k_vector(G, observ_infec, 3)
 contact_k = centrality.contact_k(G, observ_infec, 2)
 betweenness = centrality.betweenness(G)
 observ_betweenness = centrality.observed_betweenness(G, observ_infec)
@@ -234,6 +235,8 @@ for node in observ_infec:
 
 degree_tensor = torch.tensor(list(degree.values()))
 contact_tensor = torch.tensor(list(contact.values()))
+contact_k_vector_2_tensor = torch.tensor([fractions[1] for fractions in contact_k_vector.values()])
+contact_k_vector_3_tensor = torch.tensor([fractions[2] for fractions in contact_k_vector.values()])
 contact_k_tensor = torch.tensor(list(contact_k.values()))
 betweenness_tensor = torch.tensor(list(betweenness.values()))
 observ_betweenness_tensor = torch.tensor(list(observ_betweenness.values()))
@@ -242,7 +245,9 @@ input_metrics = {
     "OBS_I": observed_tensor,
     "DEG": degree_tensor,
     "CONT": contact_tensor,
-    "CONT_k": contact_k_tensor,
+    "CONT_2": contact_k_vector_2_tensor,
+    "CONT_3": contact_k_vector_3_tensor,
+    "CONT_k2": contact_k_tensor,
     "BETW": betweenness_tensor,
     "OBS_B": observ_betweenness_tensor,
 }
