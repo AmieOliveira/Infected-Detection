@@ -151,7 +151,7 @@ train_loader = DataLoader(
     batch_size=batch_size,
     shuffle=True
 )
-test_loader = torch.utils.data.DataLoader(
+test_loader = DataLoader(
     dataset=test_dataset,
     batch_size=batch_size,
 )
@@ -183,9 +183,10 @@ optimizer = torch.optim.Adam(model.parameters(), lr=l_rate,weight_decay=5e-4)
 # 4. Train model
 n_epochs = args.epochs if args.epochs else cfg["model"]["training"]["n_epochs"]
 
-train(
+best_model = train(
     model,
     train_loader,
+    test_loader,
     optimizer,
     device,
     n_epochs,
@@ -209,8 +210,8 @@ outfilebase = f"{m_info}_{d_info}_{runIdx}"
 m_filename = f"model_{outfilebase}.gnn"
 m_path = os.path.join(outpath, m_filename)
 
-torch.save(model, m_path)
-print(f"Wrote model to path: {m_path}")
+torch.save(best_model, m_path)
+print(f"Wrote Best model to path: {m_path}")
 
 # 6. Evaluate the model and save statistics
 input_fields = dataset.inputs
