@@ -213,11 +213,12 @@ torch.save(model, m_path)
 print(f"Wrote model to path: {m_path}")
 
 # 6. Evaluate the model and save statistics
-stats_train = auc_statistics(train_dataset, model, device)
+input_fields = dataset.inputs
+stats_train = auc_statistics(train_dataset, model, device, input_fields)
 stats = {"train": stats_train, "config": metadados}
 print(stats)
 if len(test_dataset) > 0:
-    stats_test = auc_statistics(test_dataset, model,device)
+    stats_test = auc_statistics(test_dataset, model, device, input_fields)
     stats["test"] = stats_test
 
 

@@ -98,7 +98,8 @@ dataset = EpidemicDataset(data_path, input_fields)
 print(f"Created data set with {len(dataset)} instances")
 
 # 4. Evaluate model
-auc = auc_statistics(dataset, model, device)
+input_fields = dataset.inputs
+auc = auc_statistics(dataset, model, device, input_fields)
 print(f"Average AUC: {auc['mean']}")
 
 stats = {
