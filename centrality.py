@@ -2,7 +2,7 @@ import networkx as nx
 
 def degree(graph):
     """
-    Computes the number of neighbors for all nodes, normalized by the size of the graph.
+    Computes the number of neighbors of each node, normalized by n - 1.
 
     Parameters:
     - graph: NetworkX graph
@@ -15,7 +15,7 @@ def degree(graph):
 
 def contact(graph, observed_nodes):
     """
-    Computes the fraction of observed infected neighbors for all nodes.
+    Computes the fraction of observed infected neighbors of each node.
 
     Parameters:
     - graph: NetworkX graph
@@ -27,11 +27,36 @@ def contact(graph, observed_nodes):
     contact = {}
     for node in graph.nodes():
         neighbors = list(graph.neighbors(node))
+        if len(neighbors) == 0:
+            contact[node] = 0.0
+            continue
         num_infected_neighbors = sum(1 for neighbor in neighbors if neighbor in observed_nodes)
-        frac_infected_neighbors = num_infected_neighbors/len(neighbors)
-        contact[node] = frac_infected_neighbors
+        contact[node] = num_infected_neighbors/len(neighbors)
     
     return contact
+
+def contact_k(graph, observed_nodes, k):
+    """
+    Computes the fraction of observed infected nodes within distance k of each node in the graph.
+
+    Parameters:
+    - graph: NetworkX graph
+    - observed_nodes: List of observed infected nodes.
+    - k: Maximum distance to search from each node.
+    
+    Returns:
+    - A dictionary with the fraction of observed infected nodes within distance k for each node.
+    """
+    contact_k = {}
+    for node in graph.nodes():
+        k_neighbors = list(nx.single_source_shortest_path_length(graph, node, cutoff=k).keys())
+        if len(k_neighbors) == 0:
+            contact_k[node] = 0.0
+            continue
+        num_infecte_k_neighbors = sum(1 for v in k_neighbors if v in observed_nodes)
+        contact_k[node] = num_infecte_k_neighbors/len(k_neighbors)
+    
+    return contact_k
 
 def betweenness(graph):
     """
