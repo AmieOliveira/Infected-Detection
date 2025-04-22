@@ -42,8 +42,8 @@ def auc_statistics(
         aucs[idx] = auc
 
         # Evalutation of the betweenness metric
-        metric = get_observed_betweenness(ins, inputs)  #.cpu().detach().numpy()
-        evaluation_metric = metric[observed_nodes == 0]
+        metric = get_observed_betweenness(ins, inputs) 
+        evaluation_metric = metric[observed_nodes == 0].cpu().detach().numpy()
         bet_aucs[idx] = roc_auc_score(evaluation_truth, evaluation_metric)
 
     gnn_stats['number of instances'] = float(n_instances)

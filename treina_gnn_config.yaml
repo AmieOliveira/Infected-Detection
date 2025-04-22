@@ -1,11 +1,11 @@
 # General
 rd_seed: 0
-output_path: /path/to/output  # Where to save the trained model and other outputs
+output_path: //home/users/rluna/epidemics/dataset/results/WS  # Where to save the trained model and other outputs
 
 # Dataset parameters
 dataset:
   name: testsBA    # Choose data set name for metadata saving
-  path: /path/to/dataset      # Path to the data set
+  path: //home/users/rluna/epidemics/dataset/results/WS      # Path to the data set
   inputs:
     - OBS_I   # Observed infected nodes (MUST ALWAYS BE GIVEN AS AN INPUT)
     - DEG     # Nodes degrees
@@ -22,6 +22,6 @@ model:
   dim_layer: 128          # Dimension of the latent space vector
   training:
     learning_rate: 0.001  # Training learning rate
-    n_epochs: 100       # Number of training epochs
+    n_epochs: 10       # Number of training epochs
 
 # TODO: Verificar quais outros parâmetros vamos precisar
