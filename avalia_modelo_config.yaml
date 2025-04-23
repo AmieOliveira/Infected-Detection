@@ -4,7 +4,7 @@ output_path: ../Dados/evaluation  # Where to save the trained model and other ou
 
 # Dataset parameters
 dataset:
-  name: testsBA    # Choose data set name for metadata saving
+  name: test    # Choose data set name for metadata saving
   path: ../Dados/instances/someWSresults      # Path to the data set
 
 # GNN model parameters

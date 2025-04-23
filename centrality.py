@@ -53,8 +53,35 @@ def contact_k(graph, observed_nodes, k):
         if len(k_neighbors) == 0:
             contact_k[node] = 0.0
             continue
-        num_infecte_k_neighbors = sum(1 for v in k_neighbors if v in observed_nodes)
-        contact_k[node] = num_infecte_k_neighbors/len(k_neighbors)
+        num_infected_k_neighbors = sum(1 for v in k_neighbors if v in observed_nodes)
+        contact_k[node] = num_infected_k_neighbors/len(k_neighbors)
+    
+    return contact_k
+
+def contact_k_vector(graph, observed_nodes, k):
+    """
+    Computes the fraction of observed infected nodes at exactly distances from 1 to k of each node in the graph.
+
+    Parameters:
+    - graph: NetworkX graph
+    - observed_nodes: List of observed infected nodes.
+    - k: Maximum distance to search from each node.
+    
+    Returns:
+    - A dictionary with the fraction of observed infected nodes at exactly distance from 1 to k for each node.
+    """
+    contact_k = {}
+    for node in graph.nodes():
+        neighbors = nx.single_source_shortest_path_length(graph, node, cutoff=k)
+        fractions = []
+        for dist in range(1, k+1):
+            dist_neighbors = [n for n, d in neighbors.items() if d == dist]
+            if dist_neighbors:
+                num_infected_k_neighbors = sum(1 for v in dist_neighbors if v in observed_nodes)
+                fractions.append(num_infected_k_neighbors/len(dist_neighbors))
+            else:
+                fractions.append(0.0)
+        contact_k[node] = fractions
     
     return contact_k
 

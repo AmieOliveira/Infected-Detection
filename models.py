@@ -9,7 +9,7 @@ import torch.nn.functional as F
 from torch_geometric.nn import GCNConv
 from torch.nn import BCEWithLogitsLoss
 import copy
-
+import pandas as pd
 # TODO: Conferir a classe
 class GCN(torch.nn.Module):
     # TODO: Documentação
@@ -53,6 +53,9 @@ def train(model, train_loader, val_loader, optimizer, device, epochs):
     best_val = None
     val_losses = []
 
+    # DataFrame para armazenar histórico
+    log_df = pd.DataFrame(columns=['epoch', 'train_loss', 'val_loss'])
+
     for epoch in range(epochs):
         model.train()
         total_loss = 0
@@ -64,20 +67,18 @@ def train(model, train_loader, val_loader, optimizer, device, epochs):
             y = data.y.float().view(-1, 1)
             x = data.x[:, 0].unsqueeze(-1)
             mask = x != y
-            tot_non_observed = mask.sum()
-            observed = torch.sum(y[y==1])
-            frac = tot_non_observed/observed    
+            if mask.sum() == 0:
+                continue
             loss = criterion(out[mask], y[mask])
-            
             loss.backward()
             optimizer.step()
             total_loss += loss.item()
 
         avg_train_loss = total_loss / len(train_loader)
-        print(f'Epoch {epoch + 1}/{epochs}, Train Loss: {avg_train_loss}')
+        val_loss = None
 
-        # Avaliação de validação a cada 10 épocas
-        if (epoch + 1) % 10 == 0:
+        # Avaliação de validação a cada 50 épocas
+        if (epoch + 1) % 50 == 0:
             val_loss = val(model, val_loader, device)
             val_losses.append(val_loss)
 
@@ -85,6 +86,15 @@ def train(model, train_loader, val_loader, optimizer, device, epochs):
                 best_val = val_loss
                 best_model = copy.deepcopy(model)
 
-            print(f"Epoch {epoch + 1}/{epochs}, Val Loss: {val_loss:.4f}")
+            print(f"Epoch {epoch + 1}/{epochs}, Train Loss: {avg_train_loss:.4f}, Val Loss: {val_loss:.4f}")
+        else:
+            print(f"Epoch {epoch + 1}/{epochs}, Train Loss: {avg_train_loss:.4f}")
 
-    return best_model
+        # Salva no DataFrame
+        log_df.loc[len(log_df)] = {
+            'epoch': epoch + 1,
+            'train_loss': avg_train_loss,
+            'val_loss': val_loss
+        }
+
+    return best_model, log_df

@@ -44,6 +44,8 @@ class EpidemicDataset(Dataset):
             print(f"Debug: Reordered input list: {self.inputs}")
 
         self.obs_b_pos = None if not ("OBS_B" in self.inputs) else self.inputs.index("OBS_B")
+        self.cont_pos = None if not ("CONT" in self.inputs) else self.inputs.index("CONT")
+        self.cont_k2_pos = None if not ("CONT_k2" in self.inputs) else self.inputs.index("CONT_k2")
 
         self.read_instances(folder)
 
@@ -76,6 +78,10 @@ class EpidemicDataset(Dataset):
                 data_point.y = ins.y.float().unsqueeze(-1)  # Saída esperada: [N, 1]
                 if not self.obs_b_pos:
                     data_point.obs_b = ins.X["OBS_B"].unsqueeze(-1)
+                if not self.cont_pos:
+                    data_point.cont = ins.X["CONT"].unsqueeze(-1)
+                if not self.cont_k2_pos:
+                    data_point.cont_k2 = ins.X["CONT_k2"].unsqueeze(-1)
 
                 self.data.append(data_point)
 
@@ -102,3 +108,15 @@ class EpidemicDataset(Dataset):
             return self.data[idx].x[self.obs_b_pos]
         else:
             return self.data[idx].obs_b
+
+    def get_contact(self, idx):
+        if self.cont_pos:
+            return self.data[idx].x[self.cont_pos]
+        else:
+            return self.data[idx].cont
+
+    def get_2neighborhood_contact(self, idx):
+        if self.cont_k2_pos:
+            return self.data[idx].x[self.cont_k2_pos]
+        else:
+            return self.data[idx].cont_k2

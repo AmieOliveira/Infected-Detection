@@ -53,7 +53,7 @@ dat_parser.add_argument(
 )
 dat_parser.add_argument(
     "--input-fields", "--inputs", nargs="+",
-    choices=["OBS_I", "DEG", "CONT", "BETW", "OBS_B"],
+    choices=["OBS_I", "DEG", "CONT", "CONT_2", "CONT_3", "CONT_k2", "BETW", "OBS_B"],
     help="List all input variables to be given to the model \n"
          "(separated by spaces. Note that the observed infected \n"
          "nodes ('OBS_I') should be always provided as input.",
@@ -147,7 +147,7 @@ print(f"Split data into train ({len(train_dataset)} instances) and test ({len(te
 #   2.3 Create train and test data loaders
 batch_size = args.batch_size if args.batch_size else cfg["dataset"]["batch_size"]
 train_loader = DataLoader(
-    dataset=dataset,
+    dataset=train_dataset,
     batch_size=batch_size,
     shuffle=True
 )
@@ -183,7 +183,7 @@ optimizer = torch.optim.Adam(model.parameters(), lr=l_rate,weight_decay=5e-4)
 # 4. Train model
 n_epochs = args.epochs if args.epochs else cfg["model"]["training"]["n_epochs"]
 
-best_model = train(
+best_model,log_df = train(
     model,
     train_loader,
     test_loader,
@@ -200,6 +200,7 @@ metadados["model"] = {
 
 print("Successfully finished GNN training")
 
+
 # 5. Save the model
 m_info = f"model-dl{dim_layer}-lr{l_rate}-ep{n_epochs}"
 d_info = f"data-{data_name}"
@@ -209,8 +210,12 @@ outfilebase = f"{m_info}_{d_info}_{runIdx}"
 
 m_filename = f"model_{outfilebase}.gnn"
 m_path = os.path.join(outpath, m_filename)
-
 torch.save(best_model, m_path)
+
+log_filename = f"model_{outfilebase}.csv"
+m_path_log = os.path.join(outpath, log_filename)
+log_df.to_csv(m_path_log) # salva em CSV
+
 print(f"Wrote Best model to path: {m_path}")
 
 # 6. Evaluate the model and save statistics

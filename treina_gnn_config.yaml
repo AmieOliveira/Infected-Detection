@@ -1,16 +1,18 @@
 # General
 rd_seed: 0
-output_path: //home/users/rluna/epidemics/dataset/results/WS  # Where to save the trained model and other outputs
+output_path: /home/users/rluna/epidemics/dataset/BA_train/treino_3knos_pObs90  # Where to save the trained model and other outputs
 
 # Dataset parameters
 dataset:
-  name: testsBA    # Choose data set name for metadata saving
-  path: //home/users/rluna/epidemics/dataset/results/WS      # Path to the data set
+  name: BA_TRAIN_obs_90    # Choose data set name for metadata saving
+  path: /home/users/rluna/epidemics/dataset/BA_train/treino_3knos_pObs90      # Path to the data set
   inputs:
     - OBS_I   # Observed infected nodes (MUST ALWAYS BE GIVEN AS AN INPUT)
     - DEG     # Nodes degrees
     - CONT    # Contact measure -- fraction of neighbors that are observed as infected
-    - CONT_2  # Contact-2 -- fraction of observed infected nodes within distance 2 of the target node
+    - CONT_2  # Contact-2 -- fraction of observed infected nodes at distance 2 of the target node
+    - CONT_3  # Contact-3 -- fraction of observed infected nodes at distance 3 of the target node
+    - CONT_k2 # Neighborhood Contact-2 -- fraction of observed infected nodes within distance 2 of the target node
     - BETW    # Betweenness metric
     - OBS_B   # Betweenness with both source and target sets being observed infected nodes
   batch_size: 128     # Training batch size
@@ -22,6 +24,6 @@ model:
   dim_layer: 128          # Dimension of the latent space vector
   training:
     learning_rate: 0.001  # Training learning rate
-    n_epochs: 10       # Number of training epochs
-
+    n_epochs: 1000       # Number of training epochs
+    
 # TODO: Verificar quais outros parâmetros vamos precisar
