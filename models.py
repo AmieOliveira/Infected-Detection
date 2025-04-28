@@ -11,8 +11,6 @@ from torch.nn import BCEWithLogitsLoss
 import copy
 import pandas as pd
 
-# TODO: Conferir a classe
-
 
 class GCN(torch.nn.Module):
     # TODO: Documentação
@@ -104,3 +102,4 @@ def train(model, train_loader, val_loader, optimizer, device, epochs):
         }
 
     return best_model, log_df
+

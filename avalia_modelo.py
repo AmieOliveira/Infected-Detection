@@ -13,7 +13,6 @@ import random
 import os
 from torch_geometric.loader import DataLoader
 from formatacao import EpidemicDataset
-from models import GCN, train
 from avaliacao import auc_statistics
 
 parser = argparse.ArgumentParser(
@@ -100,14 +99,23 @@ print(f"Created data set with {len(dataset)} instances")
 # 4. Evaluate model
 input_fields = dataset.inputs
 auc = auc_statistics(dataset, model, device, input_fields)
-print(f"Average AUC: {auc['mean']}")
+print(f"Average AUC: {auc['GNN']['mean']}")
 
 stats = {
-    "validation": auc,
+    "validation": auc['GNN'],
     "config": model_info,
     "model": {"name": model_name, "path": model_file},
     "dataset": {"name": data_name, "path": data_path},
 }
+
+for key in auc.keys():
+    if key == "GNN":
+        continue
+    stats[key] = auc[key]
+
+print("Statistics calculated: ")
+print(stats)
+print()
 
 # 5. Save statistics
 filename = f"stats_model-{model_name}_data-{data_name}.dict"
