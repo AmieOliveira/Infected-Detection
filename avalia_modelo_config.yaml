@@ -4,13 +4,13 @@ output_path: ../Dados/evaluation  # Where to save the trained model and other ou
 
 # Dataset parameters
 dataset:
-  name: test    # Choose data set name for metadata saving
-  path: ../Dados/instances/someWSresults      # Path to the data set
+  name: BA_obs10_n1k    # Choose data set name for metadata saving
+  path: ../Dados/testeBA_1knos/teste_1knos_pObs10      # Path to the data set
 
 # GNN model parameters
 model:
-  name: test
-  path: ../Dados/training
-  filebase: model-dl128-lr0.001-ep10_data-testsBA_s0
+  name: BA_obs10
+  path: ../Dados/modelos_treinados
+  filebase: model-dl128-lr0.001-ep1000_data-BA_TRAIN_obs_10_s0
 
 

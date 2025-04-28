@@ -11,6 +11,9 @@ Five inputs values are considered, aside from the network graph itself:
 - ``OBS_I``: Observed infected nodes. That is, the infected nodes that are known to be infected
 - ``DEG``: The nodes degrees.
 - ``CONT``: Node's contact measure, which is the fraction of neighbors that are observed as infected.
+- ``CONT_2``: Contact-2 -- fraction of observed infected nodes at distance 2 of the target node
+- ``CONT_3``: Contact-3 -- fraction of observed infected nodes at distance 3 of the target node
+- ``CONT_k2``: Neighborhood Contact-2 -- fraction of observed infected nodes within distance 2 of the target node
 - ``BETW``: Node's betweenness metric.
 - ``OBS_B``: Node's observed betweenness. In this instance, both source and target sets are observed infected nodes.
 

@@ -10,7 +10,10 @@ from torch_geometric.nn import GCNConv
 from torch.nn import BCEWithLogitsLoss
 import copy
 import pandas as pd
+
 # TODO: Conferir a classe
+
+
 class GCN(torch.nn.Module):
     # TODO: Documentação
     def __init__(
@@ -27,7 +30,8 @@ class GCN(torch.nn.Module):
         x = self.conv2(x, data.edge_index)        
         x = F.sigmoid(x)
         return x
-        
+
+
 def val(model, val_loader, device):
     """
     Avaliação do modelo no conjunto de validação.
@@ -46,7 +50,9 @@ def val(model, val_loader, device):
             loss = criterion(out[mask], y[mask])
             total_loss += loss.item()
 
-    return total_loss / len(val_loader)    
+    return total_loss / len(val_loader)
+
+
 def train(model, train_loader, val_loader, optimizer, device, epochs):
     criterion = BCEWithLogitsLoss()
     best_model = None
