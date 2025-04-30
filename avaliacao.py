@@ -6,7 +6,7 @@ from formatacao import EpidemicDataset
 from models import GCN
 
 import numpy as np
-from sklearn.metrics import roc_auc_score, roc_curve
+from sklearn.metrics import roc_auc_score, roc_curve, precision_score, recall_score
 
 
 def auc_statistics(
@@ -132,7 +132,7 @@ def topk_statistics(
         model: GCN,
         inputs: list,
         device='cpu',
-        k_vals=(0.1, 0.5),
+        k_vals=(0.01, 0.05),
 ):
     # TODO: Documentation
 
@@ -178,10 +178,18 @@ def topk_statistics(
             continue
         prediction = prediction.cpu().detach().numpy()  # list with the probabilities of nodes being infected
         evaluation_prediction = prediction[observed_nodes == 0]
-
+        
         # TODO: Finish implementation
 
 
+def top_k_score(evaluation_truth, evaluation_prediction, top_k):
+    top_indices = np.argsort(evaluation_prediction)[-top_k:]
+    y_true_top = evaluation_truth[top_indices]
+    y_pred_top = np.ones_like(y_true_top)
+
+    precision = precision_score(y_true_top, y_pred_top)
+    recall = recall_score(evaluation_truth, np.isin(np.arange(len(evaluation_truth)), top_indices).astype(int))
+    return precision, recall
 
 def get_input_value(datapoint, input_name, inputs_list):
     """
