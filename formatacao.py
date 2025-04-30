@@ -63,7 +63,12 @@ class EpidemicDataset(Dataset):
 
             path = os.path.join(folder, filename)
             with open(path, "rb") as f:
-                ins = pickle.load(f)
+                try:
+                    ins = pickle.load(f)
+                except EOFError as e:
+                    print("Caught EOF error while trying to read data -- will be skipping it")
+                    print(f"\t{e}\n")
+                    continue
 
             if not isinstance(ins, EpidemicInstance):
                 print(f"⚠️ Warning: File '{filename}' is not a valid EpidemicInstance (got {type(ins)}). Skipping.")
