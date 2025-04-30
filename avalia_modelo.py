@@ -98,7 +98,7 @@ print(f"Created data set with {len(dataset)} instances")
 
 # 4. Evaluate model
 input_fields = dataset.inputs
-auc = auc_statistics(dataset, model, device, input_fields)
+auc = auc_statistics(dataset, model, input_fields, device)
 print(f"Average AUC: {auc['GNN']['mean']}")
 
 stats = {

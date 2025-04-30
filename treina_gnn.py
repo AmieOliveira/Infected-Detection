@@ -220,11 +220,11 @@ print(f"Wrote Best model to path: {m_path}")
 
 # 6. Evaluate the model and save statistics
 input_fields = dataset.inputs
-stats_train = auc_statistics(train_dataset, model, device, input_fields)
+stats_train = auc_statistics(train_dataset, model, input_fields, device)
 stats = {"train": stats_train, "config": metadados}
 print(stats)
 if len(test_dataset) > 0:
-    stats_test = auc_statistics(test_dataset, model, device, input_fields)
+    stats_test = auc_statistics(test_dataset, model, input_fields, device)
     stats["test"] = stats_test
 
 

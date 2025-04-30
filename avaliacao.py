@@ -12,8 +12,8 @@ from sklearn.metrics import roc_auc_score, roc_curve
 def auc_statistics(
         data: EpidemicDataset,
         model: GCN,
-        device: 'cpu',
         inputs: list,
+        device='cpu',
 ):
     # TODO: Documentation
 
@@ -125,6 +125,42 @@ def auc_statistics(
         statistics[baseline_metrics[mIdx]] = base_stats
 
     return statistics
+
+
+def topk_statistics(
+        data: EpidemicDataset,
+        model: GCN,
+        inputs: list,
+        device='cpu',
+        k_vals=(0.1, 0.5),
+):
+    # TODO: Documentation
+
+    model.eval()
+    n_instances = len(data)
+    n_nodes = data[0].num_nodes
+    n_ks = len(k_vals)
+
+    topk = np.ndarray((n_instances, n_ks))
+    bet_topk = np.ndarray((n_instances, n_ks))
+
+    gnn_stats = {}
+    betweeness_stats = {}
+    for k in k_vals:
+        gnn_stats[f"top-{k*100}%"] = {}
+        betweeness_stats[f"top-{k*100}%"] = {}
+
+    for idx in range(n_instances):
+        ins = data[idx].to(device)
+        # print(f"Evaluation instance {idx}: {ins}")
+
+        x_tensor = ins.x.cpu().detach().numpy()
+        observed_nodes = x_tensor.T[0]
+        truth = ins.y.cpu().detach().numpy()
+        evaluation_truth = truth[observed_nodes == 0]
+
+        # TODO: Finish implementation
+
 
 
 def get_input_value(datapoint, input_name, inputs_list):
