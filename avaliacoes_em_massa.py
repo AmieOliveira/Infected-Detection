@@ -9,9 +9,9 @@ import subprocess
 # Input elements
 output_path = "../Dados/Avaliacao"
 model_path = "../Dados/Resultados"
-nk_nodes = [1, 3, 6]
+nk_nodes = [1, 3, 6, 12]
 
-data_paths = [f"../Dados/testeBA_n{n}k" for n in nk_nodes]
+data_paths = [f"../Dados/testeWS_n{n}k" for n in nk_nodes]
 base_model_name = "{}_{}"
 net_models = ["BA", "WS"]
 obs_values = [0.1, 0.25, 0.5, 0.75, 0.9]
