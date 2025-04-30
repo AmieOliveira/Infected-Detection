@@ -150,14 +150,34 @@ def topk_statistics(
         gnn_stats[f"top-{k*100}%"] = {}
         betweeness_stats[f"top-{k*100}%"] = {}
 
+    runtimeerrors = 0
+    successes = 0
+
     for idx in range(n_instances):
-        ins = data[idx].to(device)
+        try:
+            ins = data[idx].to(device)
+        except RuntimeError as e:
+            print("Caught runtime erorr while trying to get instance -- skipping it")
+            print(f"\t{e}\n")
+            runtimeerrors += 1
+            continue
         # print(f"Evaluation instance {idx}: {ins}")
 
         x_tensor = ins.x.cpu().detach().numpy()
         observed_nodes = x_tensor.T[0]
         truth = ins.y.cpu().detach().numpy()
         evaluation_truth = truth[observed_nodes == 0]
+
+        # Evaluation of the GNN model
+        try:
+            prediction = model(ins)
+        except RuntimeError as e:
+            print("Caught exception trying to infer data -- will be skipping it!")
+            print(f"\t{e}\n")
+            runtimeerrors += 1
+            continue
+        prediction = prediction.cpu().detach().numpy()  # list with the probabilities of nodes being infected
+        evaluation_prediction = prediction[observed_nodes == 0]
 
         # TODO: Finish implementation
 
