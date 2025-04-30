@@ -102,3 +102,4 @@ def train(model, train_loader, val_loader, optimizer, device, epochs):
         }
 
     return best_model, log_df
+

@@ -1,11 +1,11 @@
 # General
 rd_seed: 0
-output_path: /home/users/rluna/epidemics/dataset/BA_train/treino_3knos_pObs90  # Where to save the trained model and other outputs
+output_path: ../Dados/training  # Where to save the trained model and other outputs
 
 # Dataset parameters
 dataset:
-  name: BA_TRAIN_obs_90    # Choose data set name for metadata saving
-  path: /home/users/rluna/epidemics/dataset/BA_train/treino_3knos_pObs90      # Path to the data set
+  name: teste_BA_obs75    # Choose data set name for metadata saving
+  path: ../Dados/treinoBA/treino_3knos_pObs75      # Path to the data set
   inputs:
     - OBS_I   # Observed infected nodes (MUST ALWAYS BE GIVEN AS AN INPUT)
     - DEG     # Nodes degrees
@@ -24,6 +24,6 @@ model:
   dim_layer: 128          # Dimension of the latent space vector
   training:
     learning_rate: 0.001  # Training learning rate
-    n_epochs: 1000       # Number of training epochs
-    
-# TODO: Verificar quais outros parâmetros vamos precisar
+    n_epochs: 2       # Number of training epochs
+
+
