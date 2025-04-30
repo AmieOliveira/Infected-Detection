@@ -13,7 +13,7 @@ import random
 import os
 from torch_geometric.loader import DataLoader
 from formatacao import EpidemicDataset
-from avaliacao import auc_statistics
+from avaliacao import auc_statistics, topk_statistics
 
 parser = argparse.ArgumentParser(
     prog="Pipeline for GNN evaluation",
@@ -100,6 +100,10 @@ print(f"Created data set with {len(dataset)} instances")
 input_fields = dataset.inputs
 auc = auc_statistics(dataset, model, input_fields, device)
 print(f"Average AUC: {auc['GNN']['mean']}")
+topk = topk_statistics(dataset, model, input_fields, device, k_vals=[0.01, 0.05])
+print(f"Average top-1%: {topk['GNN']['top-1%']['mean']}")
+print(f"Average top-5%: {topk['GNN']['top-5%']['mean']}")
+print(topk)
 
 stats = {
     "validation": auc['GNN'],
