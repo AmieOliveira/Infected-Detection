@@ -26,8 +26,17 @@ def auc_statistics(
     gnn_stats = {}
     betweeness_stats = {}
 
+    runtimeerrors = 0
+    successes = 0
+
     for idx in range(n_instances):
-        ins = data[idx].to(device)
+        try:
+            ins = data[idx].to(device)
+        except RuntimeError as e:
+            print("Caught runtime erorr while trying to get instance -- skipping it")
+            print(f"\t{e}\n")
+            runtimeerrors += 1
+            continue
         # print(f"Evaluation instance {idx}: {ins}")
 
         x_tensor = ins.x.cpu().detach().numpy()
@@ -36,7 +45,14 @@ def auc_statistics(
         evaluation_truth = truth[observed_nodes == 0]
 
         # Evaluation of the GNN model
-        prediction = model(ins).cpu().detach().numpy()  # list with the probabilities of nodes being infected
+        try:
+            prediction = model(ins)
+        except RuntimeError as e:
+            print("Caught exception trying to infer data -- will be skipping it!")
+            print(f"\t{e}\n")
+            runtimeerrors += 1
+            continue
+        prediction = prediction.cpu().detach().numpy()  # list with the probabilities of nodes being infected
         evaluation_prediction = prediction[observed_nodes == 0]
         auc = roc_auc_score(evaluation_truth, evaluation_prediction)
         aucs[idx] = auc
@@ -45,6 +61,8 @@ def auc_statistics(
         metric = get_observed_betweenness(ins, inputs)  #.cpu().detach().numpy()
         evaluation_metric = metric[observed_nodes == 0].cpu().detach().numpy()
         bet_aucs[idx] = roc_auc_score(evaluation_truth, evaluation_metric)
+
+        successes += 1
 
     gnn_stats['number of instances'] = float(n_instances)
     gnn_stats['mean'] = float(np.mean(aucs))
@@ -68,6 +86,12 @@ def auc_statistics(
         "GNN": gnn_stats,
         "OBS_B": betweeness_stats
     }
+
+    print(
+        f"Finished evaluation. "
+        f"RuntimeErrors caught: {runtimeerrors}. "
+        f"Evaluated {successes} samples overall."
+    )
 
     return statistics
 
