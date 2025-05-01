@@ -5,6 +5,7 @@
 import os
 import pickle
 import torch
+import numpy as np
 from torch_geometric.data import Dataset
 
 
@@ -78,15 +79,31 @@ class EpidemicDataset(Dataset):
 
             # Concatena os tensores de entrada
             try:
-                metrics = [ins.X[inp].unsqueeze(-1) for inp in self.inputs]
+                metrics = []
+                for inp in self.inputs:
+                    x_not_normalized = ins.X[inp].unsqueeze(-1)
+                    # print(f"Not normalized data (type {type(x_not_normalized)}): {x_not_normalized}")
+                    if inp == "OBS_I":
+                        metrics.append(x_not_normalized)
+                    else:
+                        x_aux = x_not_normalized.numpy()
+                        x_mean = np.mean(x_aux)
+                        # print(x_mean)
+                        x_std = np.std(x_aux)
+                        # print(x_std)
+                        if x_std == 0:
+                            x_std = 1  # Evita divisão por zero
+
+                        x = (x_not_normalized - x_mean) / x_std
+
+                        metrics.append(x)
+
                 data_point.x = torch.cat(metrics, dim=-1)
                 data_point.y = ins.y.float().unsqueeze(-1)  # Saída esperada: [N, 1]
-                if not self.obs_b_pos:
-                    data_point.obs_b = ins.X["OBS_B"].unsqueeze(-1)
-                if not self.cont_pos:
-                    data_point.cont = ins.X["CONT"].unsqueeze(-1)
-                if not self.cont_k2_pos:
-                    data_point.cont_k2 = ins.X["CONT_k2"].unsqueeze(-1)
+
+                data_point.obs_b = ins.X["OBS_B"].unsqueeze(-1)
+                data_point.cont = ins.X["CONT"].unsqueeze(-1)
+                data_point.cont_k2 = ins.X["CONT_k2"].unsqueeze(-1)
 
                 self.data.append(data_point)
 
