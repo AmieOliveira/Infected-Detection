@@ -5,7 +5,6 @@
 import os
 import pickle
 import torch
-import numpy as np
 from torch_geometric.data import Dataset
 
 
@@ -79,26 +78,22 @@ class EpidemicDataset(Dataset):
 
             # Concatena os tensores de entrada
             try:
-                metrics = []
-                for inp in self.inputs:
-                    x_not_normalized = ins.X[inp].unsqueeze(-1)
-                    # print(f"Not normalized data (type {type(x_not_normalized)}): {x_not_normalized}")
-                    if inp == "OBS_I":
-                        metrics.append(x_not_normalized)
-                    else:
-                        x_aux = x_not_normalized.numpy()
-                        x_mean = np.mean(x_aux)
-                        # print(x_mean)
-                        x_std = np.std(x_aux)
-                        # print(x_std)
-                        if x_std == 0:
-                            x_std = 1  # Evita divisão por zero
+                metrics = [ins.X[inp].unsqueeze(-1) for inp in self.inputs]
 
-                        x = (x_not_normalized - x_mean) / x_std
+                X_not_normalized = torch.cat(metrics, dim=-1)  # Tensor [n_nodes, n_features]
+                # Copia a coluna 0 sem normalizar
+                X0 = X_not_normalized[:, 0:1]  # Infectados observáveis (mantido)
+                X_rest = X_not_normalized[:, 1:]  # Métricas estruturais (normalizar)
+                # Normalização z-score nas demais colunas
+                mean = X_rest.mean(dim=0)
+                std = X_rest.std(dim=0)
+                std[std == 0] = 1.0  # Evita divisão por zero
+        
+                X_rest_normalized = (X_rest - mean) / std
+                # Concatena: coluna 0 original + demais normalizadas
+                X = torch.cat([X0, X_rest_normalized], dim=1)
 
-                        metrics.append(x)
-
-                data_point.x = torch.cat(metrics, dim=-1)
+                data_point.x = X  # torch.cat(metrics, dim=-1)
                 data_point.y = ins.y.float().unsqueeze(-1)  # Saída esperada: [N, 1]
 
                 data_point.obs_b = ins.X["OBS_B"].unsqueeze(-1)
@@ -126,19 +121,10 @@ class EpidemicDataset(Dataset):
         return self.data[idx]
 
     def get_observed_betweenness(self, idx):
-        if self.obs_b_pos:
-            return self.data[idx].x[self.obs_b_pos]
-        else:
-            return self.data[idx].obs_b
+        return self.data[idx].obs_b
 
     def get_contact(self, idx):
-        if self.cont_pos:
-            return self.data[idx].x[self.cont_pos]
-        else:
-            return self.data[idx].cont
+        return self.data[idx].cont
 
     def get_2neighborhood_contact(self, idx):
-        if self.cont_k2_pos:
-            return self.data[idx].x[self.cont_k2_pos]
-        else:
-            return self.data[idx].cont_k2
+        return self.data[idx].cont_k2
