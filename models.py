@@ -51,7 +51,7 @@ def val(model, val_loader, device):
     return total_loss / len(val_loader)
 
 
-def train(model, train_loader, val_loader, optimizer, device, epochs):
+def train(model, train_loader, val_loader, optimizer, device, epochs, val_interval=50):
     criterion = BCEWithLogitsLoss()
     best_model = None
     best_val = None
@@ -81,8 +81,8 @@ def train(model, train_loader, val_loader, optimizer, device, epochs):
         avg_train_loss = total_loss / len(train_loader)
         val_loss = None
 
-        # Avaliação de validação a cada 50 épocas
-        if (epoch + 1) % 50 == 0:
+        # Avaliação de validação a cada N épocas
+        if (epoch + 1) % val_interval == 0:
             val_loss = val(model, val_loader, device)
             val_losses.append(val_loss)
 
@@ -100,6 +100,14 @@ def train(model, train_loader, val_loader, optimizer, device, epochs):
             'train_loss': avg_train_loss,
             'val_loss': val_loss
         }
+
+        if epochs % val_interval != 0:
+            val_loss = val(model, val_loader, device)
+            val_losses.append(val_loss)
+
+            if best_val is None or val_loss < best_val:
+                best_val = val_loss
+                best_model = copy.deepcopy(model)
 
     return best_model, log_df
 

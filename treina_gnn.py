@@ -183,7 +183,7 @@ optimizer = torch.optim.Adam(model.parameters(), lr=l_rate,weight_decay=5e-4)
 # 4. Train model
 n_epochs = args.epochs if args.epochs else cfg["model"]["training"]["n_epochs"]
 
-best_model,log_df = train(
+best_model, log_df = train(
     model,
     train_loader,
     test_loader,
@@ -220,11 +220,11 @@ print(f"Wrote Best model to path: {m_path}")
 
 # 6. Evaluate the model and save statistics
 input_fields = dataset.inputs
-stats_train = auc_statistics(train_dataset, model, input_fields, device)
+stats_train = auc_statistics(train_dataset, best_model, input_fields, device)
 stats = {"train": stats_train, "config": metadados}
 print(stats)
 if len(test_dataset) > 0:
-    stats_test = auc_statistics(test_dataset, model, input_fields, device)
+    stats_test = auc_statistics(test_dataset, best_model, input_fields, device)
     stats["test"] = stats_test
 
 
