@@ -6,6 +6,7 @@ from formatacao import EpidemicDataset
 from models import GCN
 
 import numpy as np
+import math
 from sklearn.metrics import roc_auc_score, roc_curve, precision_score, recall_score
 
 
@@ -181,8 +182,10 @@ def topk_statistics(
             continue
         prediction = prediction.cpu().detach().numpy()  # list with the probabilities of nodes being infected
         evaluation_prediction = prediction[observed_nodes == 0]
+        # print(f"Evaluation prediciton: {evaluation_prediction.flatten()}")
+        # print(f"Evaluation truth: {evaluation_truth.flatten()}")
 
-        ks = [int(k*n_nodes) for k in k_vals]
+        ks = [math.ceil(k*n_nodes) for k in k_vals]
         # ks = [k*len(evaluation_prediction) for k in k_vals]
         # print(f"The evaluation of top-k will use {ks} as the number of nodes considered")
         # TODO: Definir qual a porcentagem que a gente quer!!
@@ -198,6 +201,7 @@ def topk_statistics(
 
         # Evaluating the Observed Betweenness performance
         metric = get_observed_betweenness(ins, inputs)
+        # print(f"Observed betweenness of them all {metric} (shape {metric.shape})")
         evaluation_metric = metric[observed_nodes == 0].cpu().detach().numpy()
         precisions, recalls = top_k_score(evaluation_truth, evaluation_metric, ks)
         for kIdx in range(n_ks):
@@ -246,15 +250,24 @@ def top_k_score(evaluation_truth, evaluation_prediction, top_k_list):
     precision_list = np.ndarray(n_ks)
     recall_list = np.ndarray(n_ks)
 
+    truth = evaluation_truth.flatten()
+    pred = evaluation_prediction.flatten()
+
+    sorted_arguments = np.argsort(pred)
+    # print(f"evaluation prediction: {pred}")
+    # print(f"Sorted arguments: {sorted_arguments}")
+
     for idx, top_k in enumerate(top_k_list):
-        top_indices = np.argsort(evaluation_prediction)[-top_k:]
-        y_true_top = evaluation_truth[top_indices].flatten()
+        top_indices = sorted_arguments[-top_k:]
+        y_true_top = truth[top_indices]
         y_pred_top = np.ones_like(y_true_top)
 
-        # print("Truth: ", y_true_top.transpose())
-        # print("Pred top: ", y_pred_top.transpose())
+        # print(f"Testing k {top_k}")
+        # print("\tTruth: ", y_true_top.transpose())
+        # print("\tPred top: ", y_pred_top.transpose())
+
         precision = precision_score(y_true_top, y_pred_top)
-        recall = recall_score(evaluation_truth, np.isin(np.arange(len(evaluation_truth)), top_indices).astype(int))
+        recall = recall_score(truth, np.isin(np.arange(len(truth)), top_indices).astype(int))
 
         precision_list[idx] = precision
         recall_list[idx] = recall
