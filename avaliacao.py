@@ -188,12 +188,10 @@ def topk_statistics(
         ks = [math.ceil(k*n_nodes) for k in k_vals]
         # ks = [k*len(evaluation_prediction) for k in k_vals]
         # print(f"The evaluation of top-k will use {ks} as the number of nodes considered")
-        # TODO: Definir qual a porcentagem que a gente quer!!
 
         # Evaluating the GNN performance
         precisions, recalls = top_k_score(evaluation_truth, evaluation_prediction, ks)
-        print(f"Precisions of instance number {idx}: {precisions}")
-        # FIXME: precisions vindo sempre iguais e sempre 0 ou 1!
+        # print(f"Precisions of instance number {idx}: {precisions}")
         # TODO: Queremos os recalls tb?? Ou so o precision mesmo?
         for kIdx in range(n_ks):
             number_of_samples[idx, kIdx] = ks[kIdx]

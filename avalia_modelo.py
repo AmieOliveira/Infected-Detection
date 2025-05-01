@@ -97,13 +97,11 @@ dataset = EpidemicDataset(data_path, input_fields)
 print(f"Created data set with {len(dataset)} instances")
 
 # 4. Evaluate model
+k_vals = [0.01, 0.05, 0.5]   # TODO: Não fazer hardcoded
+
 input_fields = dataset.inputs
 auc = auc_statistics(dataset, model, input_fields, device)
 print(f"Average AUC: {auc['GNN']['mean']}")
-topk = topk_statistics(dataset, model, input_fields, device, k_vals=[0.01, 0.05])
-print(f"Average top-1%: {topk['GNN']['top-1%']['mean']}")
-print(f"Average top-5%: {topk['GNN']['top-5%']['mean']}")
-print(topk)
 
 stats = {
     "validation": auc['GNN'],
@@ -111,6 +109,21 @@ stats = {
     "model": {"name": model_name, "path": model_file},
     "dataset": {"name": data_name, "path": data_path},
 }
+
+topk = topk_statistics(dataset, model, input_fields, device, k_vals=k_vals)
+for k in k_vals:
+    kstr = int(k*100)
+    print(f"Average top-{kstr}%: {topk['GNN'][f'top-{kstr}%']['mean']}")
+    stats[f'top-{kstr}%'] = {
+        "GNN": {},
+        "OBS_B": {},
+    }
+
+for k in k_vals:
+    kstr = int(k*100)
+    stats[f'top-{kstr}%']["GNN"] = topk['GNN'][f'top-{kstr}%']
+    stats[f'top-{kstr}%']["OBS_B"] = topk['OBS_B'][f'top-{kstr}%']
+
 
 for key in auc.keys():
     if key == "GNN":
@@ -123,7 +136,6 @@ print()
 
 # 5. Save statistics
 filename = f"stats_model-{model_name}_data-{data_name}.dict"
-# TODO: Rever output name
 
 outfile = os.path.join(outpath, filename)
 
