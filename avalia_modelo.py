@@ -97,7 +97,7 @@ dataset = EpidemicDataset(data_path, input_fields)
 print(f"Created data set with {len(dataset)} instances")
 
 # 4. Evaluate model
-k_vals = [0.01, 0.05, 0.5]   # TODO: Não fazer hardcoded
+k_vals = [0.01, 0.05, 0.1]   # TODO: Não fazer hardcoded
 
 input_fields = dataset.inputs
 auc = auc_statistics(dataset, model, input_fields, device)
