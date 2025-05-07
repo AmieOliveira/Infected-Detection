@@ -12,11 +12,24 @@ from torch_geometric.data import Dataset
 
 class EpidemicInstance:
     def __init__(self, graph, input_metrics, target, metadados):
-        self.G = graph              # Lista de arestas
-        self.X = input_metrics      # Valores dos inputs (infectados observáveis + métricas estruturais)
-        # Ordenação dos valores em X: observáveis, grau, contact, betweenness, var-betweenness
-        self.y = target             # Ground truth dos nós infectados
+        self.G = graph
+        self.X_not_normalized = input_metrics  # Tensor [n_nodes, n_features]
+        self.y = target                         # Ground truth dos infectados
         self.metadados = metadados
+
+        # Copia a coluna 0 sem normalizar
+        X0 = self.X_not_normalized[:, 0:1]  # Infectados observáveis (mantido)
+        X_rest = self.X_not_normalized[:, 1:]  # Métricas estruturais (normalizar)
+
+        # Normalização z-score nas demais colunas
+        mean = X_rest.mean(dim=0)
+        std = X_rest.std(dim=0)
+        std[std == 0] = 1.0  # Evita divisão por zero
+
+        X_rest_normalized = (X_rest - mean) / std
+
+        # Concatena: coluna 0 original + demais normalizadas
+        self.X = torch.cat([X0, X_rest_normalized], dim=1)
 
 
 class EpidemicDataset(Dataset):
@@ -36,7 +49,7 @@ class EpidemicDataset(Dataset):
         self.inputs = inputs
         if "OBS_I" not in inputs:
             self.inputs = ["OBS_I"] + inputs
-            print("⚠️ Warning: observed infected not in the inputs. They will be inserted by default. "
+            print("Warning: observed infected not in the inputs. They will be inserted by default. "
                   f"New input list: {self.inputs}")
         elif inputs[0] != "OBS_I":
             self.inputs.remove("OBS_I")
@@ -63,12 +76,7 @@ class EpidemicDataset(Dataset):
 
             path = os.path.join(folder, filename)
             with open(path, "rb") as f:
-                try:
-                    ins = pickle.load(f)
-                except EOFError as e:
-                    print("Caught EOF error while trying to read data -- will be skipping it")
-                    print(f"\t{e}\n")
-                    continue
+                ins = pickle.load(f)
 
             if not isinstance(ins, EpidemicInstance):
                 print(f"⚠️ Warning: File '{filename}' is not a valid EpidemicInstance (got {type(ins)}). Skipping.")
@@ -92,13 +100,17 @@ class EpidemicDataset(Dataset):
                 X_rest_normalized = (X_rest - mean) / std
                 # Concatena: coluna 0 original + demais normalizadas
                 X = torch.cat([X0, X_rest_normalized], dim=1)
-
-                data_point.x = X  # torch.cat(metrics, dim=-1)
+                
+                data_point.x = X#torch.cat(metrics, dim=-1)
+                
                 data_point.y = ins.y.float().unsqueeze(-1)  # Saída esperada: [N, 1]
-
-                data_point.obs_b = ins.X["OBS_B"].unsqueeze(-1)
-                data_point.cont = ins.X["CONT"].unsqueeze(-1)
-                data_point.cont_k2 = ins.X["CONT_k2"].unsqueeze(-1)
+                
+                if not self.obs_b_pos:
+                    data_point.obs_b = ins.X["OBS_B"].unsqueeze(-1)
+                if not self.cont_pos:
+                    data_point.cont = ins.X["CONT"].unsqueeze(-1)
+                if not self.cont_k2_pos:
+                    data_point.cont_k2 = ins.X["CONT_k2"].unsqueeze(-1)
 
                 self.data.append(data_point)
 
@@ -121,10 +133,19 @@ class EpidemicDataset(Dataset):
         return self.data[idx]
 
     def get_observed_betweenness(self, idx):
-        return self.data[idx].obs_b
+        if self.obs_b_pos:
+            return self.data[idx].x[self.obs_b_pos]
+        else:
+            return self.data[idx].obs_b
 
     def get_contact(self, idx):
-        return self.data[idx].cont
+        if self.cont_pos:
+            return self.data[idx].x[self.cont_pos]
+        else:
+            return self.data[idx].cont
 
     def get_2neighborhood_contact(self, idx):
-        return self.data[idx].cont_k2
+        if self.cont_k2_pos:
+            return self.data[idx].x[self.cont_k2_pos]
+        else:
+            return self.data[idx].cont_k2

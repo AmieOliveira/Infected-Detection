@@ -10,8 +10,7 @@ from torch_geometric.nn import GCNConv
 from torch.nn import BCEWithLogitsLoss
 import copy
 import pandas as pd
-
-
+# TODO: Conferir a classe
 class GCN(torch.nn.Module):
     # TODO: Documentação
     def __init__(
@@ -28,8 +27,7 @@ class GCN(torch.nn.Module):
         x = self.conv2(x, data.edge_index)        
         x = F.sigmoid(x)
         return x
-
-
+        
 def val(model, val_loader, device):
     """
     Avaliação do modelo no conjunto de validação.
@@ -48,10 +46,8 @@ def val(model, val_loader, device):
             loss = criterion(out[mask], y[mask])
             total_loss += loss.item()
 
-    return total_loss / len(val_loader)
-
-
-def train(model, train_loader, val_loader, optimizer, device, epochs, val_interval=50):
+    return total_loss / len(val_loader)    
+def train(model, train_loader, val_loader, optimizer, device, epochs):
     criterion = BCEWithLogitsLoss()
     best_model = None
     best_val = None
@@ -81,8 +77,8 @@ def train(model, train_loader, val_loader, optimizer, device, epochs, val_interv
         avg_train_loss = total_loss / len(train_loader)
         val_loss = None
 
-        # Avaliação de validação a cada N épocas
-        if (epoch + 1) % val_interval == 0:
+        # Avaliação de validação a cada X épocas
+        if (epoch + 1) % va_interval == 0:
             val_loss = val(model, val_loader, device)
             val_losses.append(val_loss)
 
@@ -101,13 +97,4 @@ def train(model, train_loader, val_loader, optimizer, device, epochs, val_interv
             'val_loss': val_loss
         }
 
-        if epochs % val_interval != 0:
-            val_loss = val(model, val_loader, device)
-            val_losses.append(val_loss)
-
-            if best_val is None or val_loss < best_val:
-                best_val = val_loss
-                best_model = copy.deepcopy(model)
-
     return best_model, log_df
-

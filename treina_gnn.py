@@ -90,6 +90,23 @@ mod_parser.add_argument(
     help="Number of training epochs to be performed."
 )
 
+
+def verificar_normalizacao_dataset(dataset, atol=1e-1):
+    """
+    Verifica a normalização de cada grafo do dataset.
+    """
+    for i, data in enumerate(dataset):
+        x = data.x
+        mean = x[:, 1:].mean(dim=0)
+        std = x[:, 1:].std(dim=0)
+        
+        if not torch.allclose(mean, torch.zeros_like(mean), atol=atol) or \
+           not torch.allclose(std, torch.ones_like(std), atol=atol):
+            print(f"Graph {i} não está normalizado corretamente.")
+            print(f"Médias: {mean}")
+            print(f"Desvios padrão: {std}")
+        else:
+            print(f"Graph {i} OK")
 # TODO: Add logger
 
 args = parser.parse_args()
@@ -126,6 +143,7 @@ print(f"Model will be trained with the following inputs: {input_fields}")
 
 #   2.1 Main data set
 dataset = EpidemicDataset(data_path, input_fields)
+#verificar_normalizacao_dataset(dataset)
 
 print(f"Created data set with {len(dataset)} instances")
 
@@ -183,7 +201,7 @@ optimizer = torch.optim.Adam(model.parameters(), lr=l_rate,weight_decay=5e-4)
 # 4. Train model
 n_epochs = args.epochs if args.epochs else cfg["model"]["training"]["n_epochs"]
 
-best_model, log_df = train(
+best_model,log_df = train(
     model,
     train_loader,
     test_loader,
@@ -220,11 +238,11 @@ print(f"Wrote Best model to path: {m_path}")
 
 # 6. Evaluate the model and save statistics
 input_fields = dataset.inputs
-stats_train = auc_statistics(train_dataset, best_model, input_fields, device)
+stats_train = auc_statistics(train_dataset, best_model, device, input_fields)
 stats = {"train": stats_train, "config": metadados}
 print(stats)
 if len(test_dataset) > 0:
-    stats_test = auc_statistics(test_dataset, best_model, input_fields, device)
+    stats_test = auc_statistics(test_dataset, best_model, device, input_fields)
     stats["test"] = stats_test
 
 
