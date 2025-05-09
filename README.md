@@ -1,6 +1,5 @@
 # Identifying Asymptomatic Nodes in Network Epidemics using Graph Neural Networks
 
----
 
 This repository contains code designed to train GNNs to find assymptomatic nodes 
 in a network epidemics. In this code version, an SI epidemic model is assumed, 
@@ -36,11 +35,14 @@ network models:
  - `WS`: the Watts-Strogatz or Small World model.
  - `ER`: the Erdös-Rényi or G(n,p) model.
 
+<!--
 One can also specify a predefined model, which should be saved in the 
 [NetworkX](https://networkx.org/documentation/stable/index.html) package format.
+# FIXME: Not implemented correctly
+-->
 
 To use the script as it is (which will generate an epidemic in a WS graph with 
-30 nodes), one can simply run:
+20 nodes), one can simply run:
 ```shell
 python gera_instancia.py
 ```
@@ -75,9 +77,29 @@ Before running the script, make sure to overwrite the ``output_path`` and the
 training statistics should be saved and the path where the data set is stored,
 respectively. 
 
-...
+To train a GNN, one can simply run:
+```shell
+python treina_gnn.py
+```
+After generating a data set for it to be trained on and specifying the training 
+configurations in the yaml file. As with the instance generator script, one can 
+also overwrite parameters via command line arguments. Use the ``-h`` argument 
+for the full list of options. 
+
 
 ## GNN Evaluation
-...
+Lastly, this repository makes available an inference script, the 
+[avalia_modelo.py](avalia_modelo.py) file. As with the previous scripts, it has 
+a configuration file [avalia_modelo_config.yaml](avalia_modelo_config.yaml) from 
+which the inference configurations can be chosen from. Namely, the GNN model to 
+be used and the data set it should be tested on, as well as the output path 
+where the output statistics should be saved. 
+
+Thus, evaluating a trained GNN model in a given data set can be donr by simply 
+running: 
+```shell
+python avalia_modelo.py
+```
+after changing to the correct paths in the configuration file. 
 
 
