@@ -1,16 +1,17 @@
 # General
 rd_seed: 0
-output_path: ../Dados/evaluation  # Where to save the trained model and other outputs
+output_path: results  # Where to save the trained model and other outputs
 
 # Dataset parameters
 dataset:
-  name: BA_obs10_n1k    # Choose data set name for metadata saving
-  path: ../Dados/testeBA_1knos/teste_1knos_pObs10      # Path to the data set
+  name: DatasetNAme         # Choose data set name for metadata saving
+  path: path/to/dataset     # Path to the data set
 
 # GNN model parameters
 model:
-  name: BA_obs10
-  path: ../Dados/modelos_treinados
-  filebase: model-dl128-lr0.001-ep1000_data-BA_TRAIN_obs_10_s0
+  name: gnnModelName        # Choose model name for metadata saving
+  path: path/to/model       # Path to where the model is stored at
+  filebase: model-dl128-lr0.001-ep2_data-topk_test_s0     # Base name for model (remove the 'model_' or 'stats_'
+                                                 # from the beginning and the '.gnn' or '.dict' from the ending)
 
 

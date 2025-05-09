@@ -12,24 +12,10 @@ from torch_geometric.data import Dataset
 
 class EpidemicInstance:
     def __init__(self, graph, input_metrics, target, metadados):
-        self.G = graph
-        self.X_not_normalized = input_metrics  # Tensor [n_nodes, n_features]
-        self.y = target                         # Ground truth dos infectados
+        self.G = graph                      # Lista de arestas
+        self.X = input_metrics              # Tensor [n_nodes, n_features]
+        self.y = target                     # Ground truth dos infectados
         self.metadados = metadados
-
-        # Copia a coluna 0 sem normalizar
-        X0 = self.X_not_normalized[:, 0:1]  # Infectados observáveis (mantido)
-        X_rest = self.X_not_normalized[:, 1:]  # Métricas estruturais (normalizar)
-
-        # Normalização z-score nas demais colunas
-        mean = X_rest.mean(dim=0)
-        std = X_rest.std(dim=0)
-        std[std == 0] = 1.0  # Evita divisão por zero
-
-        X_rest_normalized = (X_rest - mean) / std
-
-        # Concatena: coluna 0 original + demais normalizadas
-        self.X = torch.cat([X0, X_rest_normalized], dim=1)
 
 
 class EpidemicDataset(Dataset):
@@ -37,7 +23,6 @@ class EpidemicDataset(Dataset):
     Dataset para carregar arquivos .pkl contendo instâncias da simulação epidêmica,
     gerando grafos com features para treinar GNNs.
     """
-
     def __init__(self, folder, inputs):
         """
         Args:

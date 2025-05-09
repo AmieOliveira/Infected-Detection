@@ -1,11 +1,11 @@
 # General
 rd_seed: 0
-output_path: ../Dados/training  # Where to save the trained model and other outputs
+output_path: path/to/save/outputs/in  # Where to save the trained model and other outputs
 
 # Dataset parameters
 dataset:
-  name: teste_BA_obs75    # Choose data set name for metadata saving
-  path: ../Dados/treinoBA/treino_3knos_pObs75      # Path to the data set
+  name: DatasetName    # Choose data set name for metadata saving
+  path: path/to/dataset      # Path to the data set
   inputs:
     - OBS_I   # Observed infected nodes (MUST ALWAYS BE GIVEN AS AN INPUT)
     - DEG     # Nodes degrees

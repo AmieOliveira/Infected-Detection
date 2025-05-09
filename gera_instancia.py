@@ -145,11 +145,14 @@ metadados["model"] = {
 }
 
 G = None
-if net_model == "adjacency":
+if net_model == "adjacency":  # TODO: Not fully implemented
+    raise ValueError(f"Generating an instance with a predefined adjacency matrix is not correctly implemented yet!")
+
     net_path = args.path
     if not net_path:
         net_path = cfg["network"]["adjacency"]["path"]
-    G = nx.from_numpy_matrix(np.array(net_path))
+        adj_array = None  # FIXME: Read from net_path
+    G = nx.from_numpy_matrix(np.array(adj_array))
     metadados["model"]["path"] = net_path
 else:
     n = args.n_nodes

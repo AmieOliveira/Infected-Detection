@@ -36,7 +36,7 @@ df_top5 = df_top5.rename(index=line_map, columns=col_map)
 # Fazer tabelas
 nets = ["WS"]  # "BA"
 obs_train_values = [0.9]
-obs_values = [0.1, 0.90]
+obs_values = [0.1, 0.5, 0.9]
 n_values = [1, 3, 6, 12]
 
 lines = [base_model_name.format(net, o) for o in obs_train_values for net in nets] + [obs_bet_name]

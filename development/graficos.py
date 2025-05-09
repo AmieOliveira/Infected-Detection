@@ -86,14 +86,19 @@ print("Finished first set of images")
 
 
 # 2. Varying the network size
-fig_size = (7, 3.5)
+fig_size = (5, 4)  # (7, 3.5)
+f_size = 5  # None
 # transparency = 0.1
 
 n_values = [1, 3, 6, 12]
+n_labels = [f"${n}\\, \\text{{k}}$" for n in n_values]
 obs_values = [0.1, 0.25, 0.50, 0.75, 0.90]
 # colors = plt.cm.get_cmap("tab20")(np.linspace(0, 1, 20))
 colors_models = plt.get_cmap("YlOrRd")(np.linspace(0.3, 0.95, 5))
 colors_obsbet = plt.get_cmap("GnBu")(np.linspace(0.3, 0.95, 5))
+
+# "GNN {}, $\\theta = {}$"
+label_model_name = "GNN, $\\theta = {}$"
 
 for net in nets:
     fig = plt.figure(figsize=fig_size)
@@ -104,7 +109,8 @@ for net in nets:
         r_model = base_model_name.format(net, o)
         m_model = df_mean.loc[r_model, columns]
         s_model = df_std.loc[r_model, columns]
-        plt.plot(n_values, m_model, label=r_model, color=colors_models[cIdx], marker="^")
+        label_name = label_model_name.format(o)  # r_model
+        plt.plot(n_values, m_model, label=label_name, color=colors_models[cIdx], marker="^")
         if plot_std:
             plt.fill_between(n_values, m_model + s_model, m_model - s_model, alpha=transparency,
                              color=colors_models[cIdx], linewidth=0)
@@ -120,8 +126,9 @@ for net in nets:
             plt.fill_between(n_values, m_o_bet + s_o_bet, m_o_bet - s_o_bet,
                              alpha=transparency, color=colors_obsbet[cIdx], linewidth=0)
 
-    plt.legend(ncols=2)
-    plt.xticks(n_values)
+    # # plt.legend(ncols=1, bbox_to_anchor=(1.3, 0.5), loc='center')  # Com fig_size = (7, 3.5)
+    # plt.legend(ncols=2, bbox_to_anchor=(0.5, 1.1), loc='lower center', fontsize=f_size)
+    plt.xticks(n_values, labels=n_labels)
     plt.xlabel("Number of nodes in the evaluation set ($n_\\text{eval}$)")
     plt.ylabel(y_axis_label)
     plt.grid(alpha=0.5, linestyle="--")
@@ -138,10 +145,11 @@ print("Finished second set of images")
 
 
 # 3. Modelo treinado em uma rede, e testado das duas redes (no mesmo gráfico)
-fig_size = (5, 4)
-f_size = 5
+fig_size = (5, 4)  # (8, 6)
+f_size = 5  # None
 # transparency = 0.1
 n_values = [1, 3, 6, 12]
+n_labels = [f"${n}\\, \\text{{k}}$" for n in n_values]
 obs_values = [0.1, 0.25, 0.50, 0.75, 0.90]
 
 marcadores = {"BA": "o", "WS": "x", obs_bet_name: "s"}
@@ -158,7 +166,7 @@ for o in obs_values:
 
             m_model = df_mean.loc[r_model, columns]
             s_model = df_std.loc[r_model, columns]
-            plt.plot(n_values, m_model, l_style[net_option], label=f"Trained in {net}, tested in {net_option}",
+            plt.plot(n_values, m_model, l_style[net_option], label=f"GNN trained in {net}, tested in {net_option}",
                      marker=marcadores[net])
             if plot_std:
                 plt.fill_between(n_values, m_model + s_model, m_model - s_model, alpha=transparency)
@@ -176,7 +184,7 @@ for o in obs_values:
         # TODO: obs. betweenness??
 
     plt.legend(ncols=3, bbox_to_anchor=(0.5, 1.15), loc='upper center', fontsize=f_size)
-    plt.xticks(n_values)
+    plt.xticks(n_values, labels=n_labels)
     plt.xlabel("Number of nodes in the evaluation set ($n_\\text{eval}$)")
     plt.ylabel(y_axis_label)
     plt.grid(alpha=0.5, linestyle="--")
@@ -207,7 +215,7 @@ for o in obs_values:
 
             m_model = df_mean.loc[r_model, columns]
             s_model = df_std.loc[r_model, columns]
-            plt.plot(n_values, m_model, l_style[net_option], label=f"Trained in {net}, tested in {net_option}",
+            plt.plot(n_values, m_model, l_style[net_option], label=f"GNN trained in {net}, tested in {net_option}",
                      marker=marcadores[net])
             if plot_std:
                 plt.fill_between(n_values, m_model + s_model, m_model - s_model, alpha=transparency)
@@ -225,7 +233,7 @@ for o in obs_values:
         # TODO: obs. betweenness??
 
     plt.legend(ncols=3, bbox_to_anchor=(0.5, 1.15), loc='upper center', fontsize=f_size)
-    plt.xticks(n_values)
+    plt.xticks(n_values, labels=n_labels)
     plt.xlabel("Number of nodes in the evaluation set ($n_\\text{eval}$)")
     plt.ylabel(y_axis_label)
     plt.grid(alpha=0.5, linestyle="--")

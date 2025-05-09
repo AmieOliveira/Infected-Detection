@@ -4,9 +4,9 @@ rd_seed: 0
 # Network creation configurations
 network:
   model: WS       # adjacency, BA, WS, ER
-  n_nodes: 50    # Number of nodes in the generated graph -- will be ignored if model is 'adjacency'
-  adjacency:      # Arguments used if model is 'adjacency'
-    path: /path/to/graph/file     # TODO: Define file format | It should be a list of lists representing the adjacency matrix
+  n_nodes: 20    # Number of nodes in the generated graph -- will be ignored if model is 'adjacency'
+  # adjacency:      # Arguments used if model is 'adjacency'  # FIXME: Not yet implemented
+  #   path: /path/to/graph/file     # Path to djacency matrix file
   BA:   # Barabási-Albert model parameters
     m: 2          # Number of edges a new node will have when it enters the network
   WS:   # Watts-Strogatz model parameters
@@ -26,6 +26,6 @@ epidemic:
   observ_prob:          # Probability of an infected node being identified as infected
     # - 0.1
     # - 0.25
-    # - 0.5
-    - 0.75
+    - 0.5
+    # - 0.75
     # - 0.9
